@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safety Doggy — Prototype</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="page-backdrop">
+
+  <div class="device-frame" id="deviceFrame">
+
+    <div class="toast" id="toast"></div>
+
+    <!-- ============ SPLASH ============ -->
+    <section id="screen-splash" class="screen active screen-splash">
+      <div class="splash-content">
+        <div class="splash-logo">🐾</div>
+        <div class="splash-title">Safety Doggy</div>
+      </div>
+    </section>
+
+    <!-- ============ MAP (HOME) ============ -->
+    <section id="screen-map" class="screen">
+      <div class="map-topbar">
+        <button class="pill-btn" id="btnOpenFilter" data-i18n="map.filters">Filtres</button>
+        <div class="map-topbar-right">
+          <button class="pill-btn pill-btn-icon" id="btnOpenLanguage">🌐 <span id="langBtnLabel">FR</span></button>
+          <button class="pill-btn pill-btn-icon" id="btnOpenAccount">👤 <span id="accountBtnLabel" data-i18n="map.account.login">Connexion</span></button>
+        </div>
+      </div>
+
+      <div class="map-canvas" id="mapCanvas">
+        <div class="map-you" id="mapYouMarker" title="Vous">📍</div>
+        <!-- markers injected by JS -->
+      </div>
+
+      <div class="map-banner map-banner-warning" id="bannerLocation" hidden>
+        <span data-i18n="map.locationBanner">Localisation indisponible</span>
+        <button id="btnLocationAction" data-i18n="map.locationBannerAction">Activer</button>
+      </div>
+
+      <div class="map-banner map-banner-error" id="bannerNetwork" hidden>
+        <span data-i18n="map.networkBanner">Impossible de charger les signalements</span>
+        <button id="btnNetworkRetry" data-i18n="map.networkBannerAction">Réessayer</button>
+      </div>
+
+      <button class="fab" id="btnReportFab" aria-label="Report">+</button>
+    </section>
+
+    <!-- ============ AUTH LANDING ============ -->
+    <section id="screen-auth-landing" class="screen">
+      <div class="topbar"><button class="back-btn" data-back>←</button><div class="topbar-title" data-i18n="auth.landing.title">Compte</div></div>
+      <div class="screen-body">
+        <p class="lead-text" data-i18n="auth.landing.subtitle">Un compte permet de responsabiliser les signalements.</p>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="chkAge">
+          <span data-i18n="auth.landing.ageCheckbox">J'ai 16 ans ou plus</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="chkTerms">
+          <span>
+            <span data-i18n="auth.landing.termsCheckboxPrefix">J'accepte les</span>
+            <a href="#" id="linkTermsFromLanding" data-i18n="legal.termsTitle">Conditions d'utilisation</a>
+            <span data-i18n="common.and">et la</span>
+            <a href="#" id="linkPrivacyFromLanding" data-i18n="legal.privacyTitle">Politique de confidentialité</a>
+          </span>
+        </label>
+
+        <button class="btn btn-google" id="btnGoogleAuth" disabled data-i18n="auth.landing.googleBtn">Continuer avec Google</button>
+        <button class="btn btn-primary" id="btnEmailSignup" disabled data-i18n="auth.landing.emailBtn">S'inscrire par email</button>
+
+        <p class="fine-print">
+          <span data-i18n="auth.landing.haveAccount">Vous avez déjà un compte ?</span>
+          <a href="#" id="linkGoToLogin" data-i18n="auth.landing.loginLink">Se connecter</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ SIGN UP ============ -->
+    <section id="screen-signup" class="screen">
+      <div class="topbar"><button class="back-btn" data-back>←</button><div class="topbar-title" data-i18n="auth.signup.title">Inscription</div></div>
+      <div class="screen-body">
+        <label class="field-label" data-i18n="auth.signup.emailLabel">Email</label>
+        <input type="email" class="field-input" id="signupEmail" autocomplete="off">
+        <div class="field-error" id="signupEmailError" hidden></div>
+
+        <label class="field-label" data-i18n="auth.signup.passwordLabel">Mot de passe</label>
+        <input type="password" class="field-input" id="signupPassword" autocomplete="off">
+
+        <p class="hint-text" data-i18n="auth.signup.testHint">Astuce démo : utilisez taken@example.com pour voir l'erreur "email déjà utilisé".</p>
+
+        <button class="btn btn-primary" id="btnSubmitSignup" data-i18n="auth.signup.submit">S'inscrire</button>
+      </div>
+    </section>
+
+    <!-- ============ NICKNAME PROMPT ============ -->
+    <section id="screen-nickname" class="screen">
+      <div class="screen-body screen-body-centered">
+        <h2 data-i18n="auth.nickname.title">Comment doit-on vous appeler ?</h2>
+        <p class="lead-text" data-i18n="auth.nickname.subtitle">Visible uniquement par vous.</p>
+        <input type="text" class="field-input" id="nicknameInput" data-i18n-placeholder="auth.nickname.placeholder" placeholder="Surnom (optionnel)">
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="btnSkipNickname" data-i18n="common.skip">Passer</button>
+          <button class="btn btn-primary" id="btnSaveNickname" data-i18n="common.save">Enregistrer</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LOGIN ============ -->
+    <section id="screen-login" class="screen">
+      <div class="topbar"><button class="back-btn" data-back>←</button><div class="topbar-title" data-i18n="auth.login.title">Connexion</div></div>
+      <div class="screen-body">
+        <p class="hint-text" id="loginResumeNote" hidden data-i18n="auth.login.resumeNote">Connectez-vous pour terminer votre signalement.</p>
+
+        <label class="field-label" data-i18n="auth.signup.emailLabel">Email</label>
+        <input type="email" class="field-input" id="loginEmail" autocomplete="off">
+
+        <label class="field-label" data-i18n="auth.signup.passwordLabel">Mot de passe</label>
+        <input type="password" class="field-input" id="loginPassword" autocomplete="off">
+        <div class="field-error" id="loginError" hidden></div>
+
+        <p class="hint-text" data-i18n="auth.login.testHint">Astuce démo : disabled@example.com (compte désactivé), mot de passe "wrongpass" (erreur).</p>
+
+        <a href="#" id="linkForgotPassword" class="link-line" data-i18n="auth.login.forgot">Mot de passe oublié ?</a>
+
+        <button class="btn btn-primary" id="btnSubmitLogin" data-i18n="auth.login.submit">Se connecter</button>
+      </div>
+    </section>
+
+    <!-- ============ FORGOT PASSWORD ============ -->
+    <section id="screen-forgot" class="screen">
+      <div class="topbar"><button class="back-btn" data-back>←</button><div class="topbar-title" data-i18n="auth.forgot.title">Réinitialiser le mot de passe</div></div>
+      <div class="screen-body">
+        <div id="forgotForm">
+          <label class="field-label" data-i18n="auth.signup.emailLabel">Email</label>
+          <input type="email" class="field-input" id="forgotEmail" autocomplete="off">
+          <button class="btn btn-primary" id="btnSubmitForgot" data-i18n="auth.forgot.submit">Envoyer le lien</button>
+        </div>
+        <div id="forgotSent" class="empty-state" hidden>
+          <p data-i18n="auth.forgot.sent">Si cet email existe, un lien de réinitialisation a été envoyé.</p>
+          <a href="#" data-back class="link-line" data-i18n="common.backToLogin">Retour à la connexion</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EMAIL CONFIRMATION PENDING ============ -->
+    <section id="screen-confirm-pending" class="screen">
+      <div class="screen-body screen-body-centered">
+        <div class="big-icon">✉️</div>
+        <h2 data-i18n="auth.confirmPending.title">Confirmez votre email</h2>
+        <p class="lead-text" id="confirmPendingMessage"></p>
+        <button class="btn btn-secondary" id="btnResendEmail" data-i18n="auth.confirmPending.resend">Renvoyer l'email</button>
+        <button class="btn btn-demo" id="btnConfirmDemo" data-i18n="auth.confirmPending.confirmedDemoBtn">[Démo] J'ai confirmé mon email</button>
+        <a href="#" id="linkBackToMapFromConfirm" class="link-line" data-i18n="auth.confirmPending.backToMap">Retour à la carte</a>
+      </div>
+    </section>
+
+    <!-- ============ REPORT CREATION ============ -->
+    <section id="screen-report-create" class="screen">
+      <div class="topbar"><button class="back-btn" data-back>←</button><div class="topbar-title" data-i18n="report.create.title">Nouveau signalement</div></div>
+      <div class="screen-body">
+
+        <div class="type-group-label hazard-label" data-i18n="filter.hazards">⚠ Dangers</div>
+        <div class="type-grid" id="typeGridHazard"></div>
+
+        <div class="type-group-label positive-label" data-i18n="filter.positive">✅ Points positifs</div>
+        <div class="type-grid" id="typeGridPositive"></div>
+
+        <div class="report-duration-row" id="durationRow" hidden>
+          <span data-i18n="report.create.durationLabel">Durée :</span>
+          <strong id="durationValue"></strong>
+        </div>
+
+        <div class="mini-map-label" id="miniMapLabel"></div>
+        <div class="mini-map" id="miniMap">
+          <div class="mini-map-safezone"></div>
+          <div class="mini-map-pin" id="draggablePin">📍</div>
+        </div>
+        <button class="link-btn" id="btnRecenterPin" hidden data-i18n="report.create.recenterBtn">Utiliser ma position</button>
+        <div class="field-error" id="pinAreaError" hidden data-i18n="report.create.outsideArea">Safety Doggy couvre uniquement la zone du Havre pour le moment.</div>
+
+        <div class="field-error" id="antiSpamError" hidden></div>
+
+        <a href="mailto:contact@safetydoggy.app?subject=Suggestion%20de%20type%20de%20signalement" class="link-line" data-i18n="report.create.suggestType">Suggérer un nouveau type de signalement →</a>
+
+        <button class="btn btn-primary" id="btnSubmitReport" disabled data-i18n="report.create.submit">Publier</button>
+      </div>
+    </section>
+
+    <!-- ============ PROFILE ============ -->
+    <section id="screen-profile" class="screen">
+      <div class="topbar"><button class="back-btn" data-back>←</button><div class="topbar-title" data-i18n="profile.title">Profil</div></div>
+      <div class="screen-body">
+        <div class="profile-block">
+          <div class="profile-avatar-wrap">
+            <button class="profile-avatar" id="btnProfileAvatar" aria-label="Photo de profil">
+              <img id="profileAvatarImg" hidden>
+              <span id="profileAvatarPlaceholder" class="avatar-placeholder">🐾</span>
+            </button>
+            <div class="profile-avatar-actions">
+              <button class="link-btn" id="btnProfileAvatarAction" data-i18n="profile.photoAdd">Ajouter une photo</button>
+              <button class="link-btn link-btn-danger" id="btnProfileAvatarRemove" hidden data-i18n="profile.photoRemove">Supprimer la photo</button>
+            </div>
+            <input type="file" accept="image/*" id="profileAvatarInput" hidden>
+            <div class="profile-avatar-caption" data-i18n="profile.photoNotPublic">Jamais visible sur les signalements</div>
+          </div>
+          <div class="profile-email" id="profileEmail"></div>
+          <div class="profile-row" id="profileNicknameRow">
+            <span id="profileNicknameDisplay"></span>
+            <button class="link-btn" id="btnEditNickname" data-i18n="profile.edit">Modifier</button>
+          </div>
+          <div class="profile-nickname-edit" id="nicknameEditRow" hidden>
+            <input type="text" class="field-input" id="nicknameEditInput">
+            <div class="btn-row">
+              <button class="btn btn-secondary" id="btnCancelNicknameEdit" data-i18n="common.cancel">Annuler</button>
+              <button class="btn btn-primary" id="btnSaveNicknameEdit" data-i18n="common.save">Enregistrer</button>
+            </div>
+          </div>
+          <div class="profile-meta" id="profileMemberSince"></div>
+        </div>
+
+        <button class="list-row" id="btnGoLanguageFromProfile">
+          <span data-i18n="map.language">Langue</span>
+          <span class="list-row-value" id="profileLangValue"></span>
+        </button>
+        <button class="list-row" id="btnGoHistory">
+          <span data-i18n="profile.myReports">Mes signalements</span>
+          <span class="list-row-chevron">›</span>
+        </button>
+        <button class="list-row" id="btnGoTermsFromProfile">
+          <span data-i18n="legal.termsTitle">Conditions d'utilisation</span>
+          <span class="list-row-chevron">›</span>
+        </button>
+        <button class="list-row" id="btnGoPrivacyFromProfile">
+          <span data-i18n="legal.privacyTitle">Politique de confidentialité</span>
+          <span class="list-row-chevron">›</span>
+        </button>
+
+        <button class="btn btn-secondary" id="btnLogout" data-i18n="profile.logout">Se déconnecter</button>
+        <button class="btn btn-danger-text" id="btnOpenDeleteAccount" data-i18n="profile.deleteAccount">Supprimer mon compte</button>
+      </div>
+    </section>
+
+    <!-- ============ REPORT HISTORY ============ -->
+    <section id="screen-history" class="screen">
+      <div class="topbar"><button class="back-btn" data-back>←</button><div class="topbar-title" data-i18n="history.title">Mes signalements</div></div>
+      <div class="screen-body" id="historyBody"></div>
+    </section>
+
+    <!-- ============ TERMS OF USE ============ -->
+    <section id="screen-terms" class="screen">
+      <div class="topbar"><button class="back-btn" data-back>←</button><div class="topbar-title" data-i18n="legal.termsTitle">Conditions d'utilisation</div></div>
+      <div class="screen-body" id="termsBody"></div>
+    </section>
+
+    <!-- ============ PRIVACY POLICY ============ -->
+    <section id="screen-privacy" class="screen">
+      <div class="topbar"><button class="back-btn" data-back>←</button><div class="topbar-title" data-i18n="legal.privacyTitle">Politique de confidentialité</div></div>
+      <div class="screen-body" id="privacyBody"></div>
+    </section>
+
+    <!-- ============ SCRIM (shared backdrop for sheets/modals) ============ -->
+    <div class="scrim" id="scrim" hidden></div>
+
+    <!-- ============ BOTTOM SHEET: FILTER ============ -->
+    <div class="sheet" id="sheet-filter" hidden>
+      <div class="sheet-handle"></div>
+      <div class="sheet-title" data-i18n="filter.title">Filtrer les signalements</div>
+      <div class="type-group-label hazard-label" data-i18n="filter.hazards">⚠ Dangers</div>
+      <div class="filter-list" id="filterListHazard"></div>
+      <div class="type-group-label positive-label" data-i18n="filter.positive">✅ Points positifs</div>
+      <div class="filter-list" id="filterListPositive"></div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="btnFilterClear" data-i18n="filter.clearAll">Tout décocher</button>
+        <button class="btn btn-secondary" id="btnFilterAll" data-i18n="filter.selectAll">Tout cocher</button>
+      </div>
+    </div>
+
+    <!-- ============ BOTTOM SHEET: REPORT DETAIL ============ -->
+    <div class="sheet" id="sheet-report-detail" hidden>
+      <div class="sheet-handle"></div>
+      <div id="reportDetailBody"></div>
+    </div>
+
+    <!-- ============ BOTTOM SHEET: LANGUAGE ============ -->
+    <div class="sheet" id="sheet-language" hidden>
+      <div class="sheet-handle"></div>
+      <div class="sheet-title" data-i18n="language.title">Langue / Language</div>
+      <label class="radio-row">
+        <input type="radio" name="langChoice" value="fr" id="langChoiceFr">
+        <span>Français</span>
+      </label>
+      <label class="radio-row">
+        <input type="radio" name="langChoice" value="en" id="langChoiceEn">
+        <span>English</span>
+      </label>
+    </div>
+
+    <!-- ============ MODAL: DUPLICATE CONFIRMATION ============ -->
+    <div class="modal" id="modal-duplicate" hidden>
+      <div class="modal-box">
+        <div class="modal-title" data-i18n="report.create.duplicateTitle">Un signalement similaire existe déjà à proximité</div>
+        <div class="modal-body" id="duplicateModalBody"></div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="btnDuplicateCancel" data-i18n="common.cancel">Annuler</button>
+          <button class="btn btn-primary" id="btnDuplicateConfirm" data-i18n="report.create.publishAnyway">Publier quand même</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MODAL: DELETE REPORT ============ -->
+    <div class="modal" id="modal-delete-report" hidden>
+      <div class="modal-box">
+        <div class="modal-title" data-i18n="deleteReport.title">Supprimer ce signalement ?</div>
+        <div class="modal-body" data-i18n="deleteReport.body">Cette action est irréversible.</div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="btnDeleteReportCancel" data-i18n="common.cancel">Annuler</button>
+          <button class="btn btn-danger" id="btnDeleteReportConfirm" data-i18n="common.delete">Supprimer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MODAL: DELETE ACCOUNT ============ -->
+    <div class="modal" id="modal-delete-account" hidden>
+      <div class="modal-box">
+        <div class="modal-title" data-i18n="deleteAccount.title">Supprimer votre compte ?</div>
+        <div class="modal-body" data-i18n="deleteAccount.body">Vos signalements restent sur la carte, anonymisés. Vos données personnelles seront supprimées sous 30 jours.</div>
+        <label class="field-label" data-i18n="deleteAccount.passwordLabel">Mot de passe</label>
+        <input type="password" class="field-input" id="deleteAccountPassword">
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="btnDeleteAccountCancel" data-i18n="common.cancel">Annuler</button>
+          <button class="btn btn-danger" id="btnDeleteAccountConfirm" data-i18n="common.delete">Supprimer</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <aside class="dev-panel" id="devPanel">
+    <div class="dev-panel-title">⚙ Prototype Controls <span class="dev-panel-subtitle">(not part of the real app)</span></div>
+
+    <div class="dev-row">
+      <span>Account:</span>
+      <button id="devLoginToggle" class="dev-btn"></button>
+    </div>
+    <div class="dev-row" id="devConfirmRow">
+      <span>Email confirmed:</span>
+      <button id="devConfirmToggle" class="dev-btn"></button>
+    </div>
+    <div class="dev-row">
+      <span>GPS permission:</span>
+      <button id="devGpsToggle" class="dev-btn"></button>
+    </div>
+    <div class="dev-row">
+      <span>Network:</span>
+      <button id="devNetworkToggle" class="dev-btn"></button>
+    </div>
+    <div class="dev-row" id="devSessionExpiryRow" hidden>
+      <span>On Report Creation:</span>
+      <button id="devSessionExpiry" class="dev-btn">Simulate session expiry</button>
+    </div>
+    <div class="dev-row">
+      <button id="devReset" class="dev-btn dev-btn-reset">↺ Reset prototype data</button>
+    </div>
+  </aside>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
