@@ -27,3 +27,6 @@ yarn-error.*
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Claude Code local runtime state (repo-root only; mobile/.claude/ is project config, keep that one)
+/.claude/
