@@ -93,6 +93,8 @@ Même raisonnement que #8 : comme type de signalement/point d'intérêt plutôt 
 
 **Ce qui a changé depuis :** le système de signalement "incorrect" avec suppression automatique à 4 signalements (`supabase/002_flag_threshold.sql`) construit dans cette session réduit une partie de ce risque — il existe maintenant un filet de sécurité qui n'existait pas au moment de la décision initiale. Ça rend cette feature plus raisonnable qu'avant, sans éliminer le risque totalement.
 
+**Précision du 2026-07-16 (confirmée par les porteurs de projet) : la photo doit être facultative, jamais bloquante.** Un utilisateur doit pouvoir publier un signalement sans photo exactement comme aujourd'hui — l'ajout d'une photo est une option en plus, pas une nouvelle étape obligatoire du parcours de création. À implémenter avec un champ `photo_url` nullable sur `reports` et un bouton "Ajouter une photo (optionnel)" dans `report-create.tsx`, sans jamais désactiver le bouton "Publier" en son absence.
+
 **Intérêt : 3/5** · **Difficulté : 3/5** — Nécessite un bucket Supabase Storage + upload UI + décision consciente sur la modération.
 
 ---
