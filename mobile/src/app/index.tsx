@@ -1,6 +1,7 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import * as Location from 'expo-location';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, type Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -42,9 +43,11 @@ export default function MapScreen() {
     }
   };
 
-  useEffect(() => {
-    loadReports();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadReports();
+    }, []),
+  );
 
   return (
     <View style={styles.container}>
@@ -56,8 +59,11 @@ export default function MapScreen() {
               key={report.id}
               coordinate={{ latitude: report.latitude, longitude: report.longitude }}
               title={type.labelFr}
-              pinColor={type.color}
-            />
+              anchor={{ x: 0.5, y: 0.5 }}>
+              <View style={[styles.markerBubble, { backgroundColor: type.color }]}>
+                <Text style={styles.markerIcon}>{type.icon}</Text>
+              </View>
+            </Marker>
           );
         })}
       </MapView>
@@ -97,11 +103,7 @@ export default function MapScreen() {
         <Pressable
           style={styles.fab}
           onPress={() => {
-            if (!session) {
-              router.push('/auth-landing');
-              return;
-            }
-            Alert.alert('Bientôt disponible', 'La création de signalement arrive dans une prochaine étape.');
+            router.push(session ? '/report-create' : '/auth-landing');
           }}>
           <Text style={styles.fabLabel}>+</Text>
         </Pressable>
@@ -141,6 +143,23 @@ const styles = StyleSheet.create({
   accountPillLabel: {
     fontWeight: '600',
     color: '#1D3557',
+  },
+  markerBubble: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'white',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+  },
+  markerIcon: {
+    fontSize: 16,
   },
   banner: {
     backgroundColor: '#1D3557',
