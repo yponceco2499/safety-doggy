@@ -6,6 +6,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, type Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ReportDetailSheet } from '@/components/report-detail-sheet';
 import { DEFAULT_REGION, getReportType } from '@/constants/report-types';
 import { useAuth } from '@/lib/auth-context';
 import { signOut } from '@/lib/auth';
@@ -17,6 +18,7 @@ export default function MapScreen() {
   const [locationGranted, setLocationGranted] = useState(false);
   const [reports, setReports] = useState<Report[]>([]);
   const [loadError, setLoadError] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -59,7 +61,8 @@ export default function MapScreen() {
               key={report.id}
               coordinate={{ latitude: report.latitude, longitude: report.longitude }}
               title={type.labelFr}
-              anchor={{ x: 0.5, y: 0.5 }}>
+              anchor={{ x: 0.5, y: 0.5 }}
+              onPress={() => setSelectedReport(report)}>
               <View style={[styles.markerBubble, { backgroundColor: type.color }]}>
                 <Text style={styles.markerIcon}>{type.icon}</Text>
               </View>
@@ -108,6 +111,22 @@ export default function MapScreen() {
           <Text style={styles.fabLabel}>+</Text>
         </Pressable>
       </SafeAreaView>
+
+      {selectedReport && (
+        <ReportDetailSheet
+          report={selectedReport}
+          currentUserId={session?.user.id ?? null}
+          onClose={() => setSelectedReport(null)}
+          onUpdated={(updated) => {
+            setReports((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
+            setSelectedReport(updated);
+          }}
+          onDeleted={(reportId) => {
+            setReports((prev) => prev.filter((r) => r.id !== reportId));
+            setSelectedReport(null);
+          }}
+        />
+      )}
     </View>
   );
 }

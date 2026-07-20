@@ -88,3 +88,24 @@ export async function createReport(
   if (error) throw error;
   return data as Report;
 }
+
+export async function extendReport(report: Report): Promise<Report> {
+  const config = getReportType(report.type);
+  if (config.durationHours == null) return report;
+
+  const expiresAt = new Date(Date.now() + config.durationHours * 3600 * 1000).toISOString();
+  const { data, error } = await supabase
+    .from('reports')
+    .update({ expires_at: expiresAt })
+    .eq('id', report.id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as Report;
+}
+
+export async function deleteReport(reportId: string): Promise<void> {
+  const { error } = await supabase.from('reports').update({ is_active: false }).eq('id', reportId);
+  if (error) throw error;
+}
