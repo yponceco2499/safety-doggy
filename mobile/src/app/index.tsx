@@ -2,7 +2,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import * as Location from 'expo-location';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, type Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,7 +10,6 @@ import { FilterSheet } from '@/components/filter-sheet';
 import { ReportDetailSheet } from '@/components/report-detail-sheet';
 import { DEFAULT_REGION, REPORT_TYPES, getReportType, type ReportTypeId } from '@/constants/report-types';
 import { useAuth } from '@/lib/auth-context';
-import { signOut } from '@/lib/auth';
 import { fetchActiveReports, type Report } from '@/lib/reports';
 
 export default function MapScreen() {
@@ -85,14 +84,7 @@ export default function MapScreen() {
           <Pressable
             style={styles.accountPill}
             onPress={() => {
-              if (!session) {
-                router.push('/auth-landing');
-                return;
-              }
-              Alert.alert(session.user.email ?? 'Compte', undefined, [
-                { text: 'Annuler', style: 'cancel' },
-                { text: 'Se déconnecter', style: 'destructive', onPress: () => signOut() },
-              ]);
+              router.push(session ? '/profile' : '/auth-landing');
             }}>
             <Text style={styles.accountPillLabel}>{session ? 'Profil' : 'Connexion'}</Text>
           </Pressable>

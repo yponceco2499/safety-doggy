@@ -25,6 +25,27 @@ export async function fetchActiveReports(): Promise<Report[]> {
   return data ?? [];
 }
 
+export type ReportStatus = 'active' | 'expired' | 'deleted';
+
+export function reportStatus(report: Report): ReportStatus {
+  if (!report.is_active) return 'deleted';
+  if (report.expires_at && new Date(report.expires_at).getTime() <= Date.now()) return 'expired';
+  return 'active';
+}
+
+// Full history for the current user, including expired/deleted reports —
+// unlike fetchActiveReports, not filtered by is_active/expires_at.
+export async function fetchMyReports(userId: string): Promise<Report[]> {
+  const { data, error } = await supabase
+    .from('reports')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
 // Haversine distance in meters.
 export function distanceMeters(a: { latitude: number; longitude: number }, b: { latitude: number; longitude: number }) {
   const R = 6371000;
