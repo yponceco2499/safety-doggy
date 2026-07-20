@@ -108,7 +108,7 @@ Android-only is a deliberate MVP constraint, not a permanent exclusion — see �
 | Duplicate-report confirmation (50m radius) | ✅ Yes |
 | Anti-spam limit (5 reports/hour/account) | ✅ Yes |
 | Terms of Use / Privacy Policy pages | ✅ Yes |
-| **Minimal "flag as incorrect" button** *(proposed addition — needs your sign-off, see audit doc §3.2)* | 🟡 Proposed |
+| **"Flag as incorrect" button, auto-deactivates at 4 flags** *(see §4.7)* | ✅ Yes |
 | Optional profile photo (avatar) | ✅ Yes *(added 2026-07-16, see §4.4)* |
 | Free-text description on reports | ❌ Removed from MVP (see §4.5) |
 | Nickname displayed on reports | ❌ Not shown publicly (see §4.4) |
@@ -238,16 +238,15 @@ The MVP must be functional, stable, and publishable on the Google Play Store —
 
 > ⚙️ Expiration is enforced server-side, not just client-side, so all users see a consistent map regardless of device or cache state.
 
-### 4.7 Flagging an Incorrect Report *(proposed MVP addition — pending your validation)*
+### 4.7 Flagging an Incorrect Report *(implemented in the MVP)*
 
-**Why:** with no free-text field and a strict no-identification content rule, the MVP still has zero way for a user to flag a wrong or malicious report — the only mitigation otherwise is your own manual review via the Supabase dashboard, with no way to even know a report needs a look.
+**Why:** with no free-text field and a strict no-identification content rule, the MVP still needs a way for a user to flag a wrong or malicious report, rather than relying solely on manual review via the Supabase dashboard.
 
-**Proposed minimal version for MVP:**
-- A single "Flag as incorrect" button on each report's detail card.
-- No auto-threshold, no automatic deactivation, no moderation dashboard (all of that stays in V2, §9.2).
-- A flag simply logs to a `flags` table (report_id, flagged_by user_id, timestamp) that you check manually.
-
-This is a small addition — one button, one table — that closes a real gap for the cost of roughly an hour of build time. If you'd rather keep the MVP scope exactly as originally defined, drop this and rely on manual dashboard review only.
+**Implemented version:**
+- A single "Flag as incorrect" button on each report's detail card (hidden for the report's own creator, and for visitors — registered users only).
+- **Auto-deactivation at 4 flags** *(moved up from V2 into the MVP, threshold set to 4 rather than the originally planned 5 — decision made 2026-07-16 during build)*: once a report accumulates 4 flags, it's automatically deactivated (`is_active = false`) — same soft-delete state as the creator manually deleting it, reversible from the dashboard.
+- One flag per user per report (enforced by a unique constraint on `flags(report_id, flagged_by)`).
+- No moderation dashboard yet, no visibility into who flagged what — that part of §9.2's fuller moderation system is still V2. The threshold check itself runs server-side via a `flag_report()` Postgres function (`security definer`) so the `flags` table can stay unreadable to regular clients — flagger identity is never exposed to other users, only to the project owners via the Supabase dashboard.
 
 ---
 
@@ -312,7 +311,7 @@ This is a small addition — one button, one table — that closes a real gap fo
 | expires_at | TIMESTAMP (nullable) | Auto-expiration date; NULL = permanent |
 | is_active | BOOLEAN | Active / manually disabled |
 
-**Table: `flags`** *(only if §4.7 is approved)*
+**Table: `flags`**
 
 | Field | Type | Description |
 |---|---|---|
@@ -353,7 +352,7 @@ React Native + Expo is natively cross-platform — no rewrite required to add iO
 | Edit own report | ❌ | ✅ |
 | Delete own report | ❌ | ✅ |
 | View own report history | ❌ | ✅ |
-| Flag a report *(if §4.7 approved)* | ❌ | ✅ |
+| Flag a report | ❌ | ✅ |
 | Delete own account | ❌ | ✅ (GDPR) |
 
 ### 6.2 Sign-up Journey
@@ -461,7 +460,7 @@ V2 (iOS port + advanced features) launches only when:
 
 **Walk history** — opt-in GPS trace recording, frequented-area visualization, personal stats (distance, frequency). Requires explicit GDPR consent.
 
-**Community moderation system** — full "Report as incorrect" flow with a threshold (report auto-deactivates pending review after 5 flags), a simple moderation dashboard, and visibility for moderators into who flagged what (to prevent coordinated abuse of the flagging system itself). This supersedes the minimal MVP version in §4.7 if approved.
+**Full moderation dashboard** — a simple UI over the `flags` table (currently only reviewable via the raw Supabase dashboard), plus visibility for moderators into who flagged what, to catch coordinated abuse of the flagging system itself. The auto-deactivation threshold (4 flags) is already live in the MVP as of §4.7; this V2 item is just the dashboard layer on top.
 
 **User reputation system** — reliability score from report/confirmation history, shown on report cards. Includes the option to attach an optional photo to a report, to strengthen credibility and engagement.
 
@@ -486,7 +485,7 @@ V2 (iOS port + advanced features) launches only when:
 
 - [ ] Create the Expo project: `npx create-expo-app safety-doggy`
 - [ ] Configure Supabase: project setup, enable Auth (email + Google OAuth)
-- [ ] Create `users`, `reports` (and `flags`, if §4.7 approved) tables; configure RLS
+- [ ] Create `users`, `reports`, `flags` tables; configure RLS
 - [ ] Install `react-native-maps`, configure OpenStreetMap tiles
 - [ ] Build the map screen (marker rendering, category filter)
 - [ ] Build the authentication flow (sign-up / login, age gate)

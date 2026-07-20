@@ -6,8 +6,9 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, type Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { FilterSheet } from '@/components/filter-sheet';
 import { ReportDetailSheet } from '@/components/report-detail-sheet';
-import { DEFAULT_REGION, getReportType } from '@/constants/report-types';
+import { DEFAULT_REGION, REPORT_TYPES, getReportType, type ReportTypeId } from '@/constants/report-types';
 import { useAuth } from '@/lib/auth-context';
 import { signOut } from '@/lib/auth';
 import { fetchActiveReports, type Report } from '@/lib/reports';
@@ -19,6 +20,11 @@ export default function MapScreen() {
   const [reports, setReports] = useState<Report[]>([]);
   const [loadError, setLoadError] = useState(false);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [activeFilters, setActiveFilters] = useState<Set<ReportTypeId>>(
+    () => new Set(REPORT_TYPES.map((t) => t.id)),
+  );
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  const visibleReports = reports.filter((r) => activeFilters.has(r.type));
 
   useEffect(() => {
     (async () => {
@@ -54,7 +60,7 @@ export default function MapScreen() {
   return (
     <View style={styles.container}>
       <MapView style={StyleSheet.absoluteFill} initialRegion={region} showsUserLocation={locationGranted}>
-        {reports.map((report) => {
+        {visibleReports.map((report) => {
           const type = getReportType(report.type);
           return (
             <Marker
@@ -73,7 +79,9 @@ export default function MapScreen() {
 
       <SafeAreaView style={styles.topBar} pointerEvents="box-none">
         <View style={styles.topBarRow} pointerEvents="box-none">
-          <View />
+          <Pressable style={styles.accountPill} onPress={() => setFilterSheetOpen(true)}>
+            <Text style={styles.accountPillLabel}>Filtres</Text>
+          </Pressable>
           <Pressable
             style={styles.accountPill}
             onPress={() => {
@@ -125,6 +133,14 @@ export default function MapScreen() {
             setReports((prev) => prev.filter((r) => r.id !== reportId));
             setSelectedReport(null);
           }}
+        />
+      )}
+
+      {filterSheetOpen && (
+        <FilterSheet
+          activeFilters={activeFilters}
+          onChange={setActiveFilters}
+          onClose={() => setFilterSheetOpen(false)}
         />
       )}
     </View>

@@ -109,3 +109,11 @@ export async function deleteReport(reportId: string): Promise<void> {
   const { error } = await supabase.from('reports').update({ is_active: false }).eq('id', reportId);
   if (error) throw error;
 }
+
+// Inserts the flag and auto-deactivates the report once it reaches the
+// threshold, via the flag_report() RPC (see supabase/002_flag_threshold.sql) —
+// the flags table itself isn't readable by regular clients.
+export async function flagReport(reportId: string): Promise<void> {
+  const { error } = await supabase.rpc('flag_report', { p_report_id: reportId });
+  if (error) throw error;
+}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { getReportType } from '@/constants/report-types';
-import { deleteReport, extendReport, type Report } from '@/lib/reports';
+import { deleteReport, extendReport, flagReport, type Report } from '@/lib/reports';
 
 interface Props {
   report: Report;
@@ -33,10 +33,22 @@ function remainingLabel(expiresAt: string | null, durationHours: number | null):
 
 export function ReportDetailSheet({ report, currentUserId, onClose, onUpdated, onDeleted }: Props) {
   const [busy, setBusy] = useState(false);
+  const [flagged, setFlagged] = useState(false);
   const type = getReportType(report.type);
   const isCreator = currentUserId != null && report.user_id === currentUserId;
   const remaining = remainingLabel(report.expires_at, type.durationHours);
   const expired = type.durationHours != null && remaining == null;
+
+  const handleFlag = async () => {
+    if (!currentUserId) return;
+    setBusy(true);
+    try {
+      await flagReport(report.id);
+      setFlagged(true);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const handleExtend = async () => {
     setBusy(true);
@@ -93,6 +105,19 @@ export function ReportDetailSheet({ report, currentUserId, onClose, onUpdated, o
             </Pressable>
           </View>
         )}
+
+        {!isCreator && currentUserId != null && !expired && (
+          <Pressable
+            style={[styles.actionButton, styles.flagButton, flagged && styles.actionButtonDisabled]}
+            onPress={handleFlag}
+            disabled={busy || flagged}>
+            {busy ? (
+              <ActivityIndicator color="#555" />
+            ) : (
+              <Text style={styles.actionLabel}>{flagged ? 'Signalé — merci' : 'Signaler comme incorrect'}</Text>
+            )}
+          </Pressable>
+        )}
       </View>
     </Modal>
   );
@@ -143,4 +168,6 @@ const styles = StyleSheet.create({
   actionLabel: { color: '#208AEF', fontWeight: '700' },
   deleteButton: { borderColor: '#C62828' },
   deleteLabel: { color: '#C62828' },
+  flagButton: { marginTop: 12, borderColor: '#999' },
+  actionButtonDisabled: { opacity: 0.5 },
 });
