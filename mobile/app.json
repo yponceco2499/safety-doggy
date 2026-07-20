@@ -32,6 +32,12 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Safety Doggy utilise votre position pour centrer la carte et pré-remplir vos signalements."
+        }
       ]
     ],
     "experiments": {

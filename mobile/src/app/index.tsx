@@ -1,98 +1,184 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import * as Location from 'expo-location';
+import { useEffect, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import MapView, { Marker, type Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { DEFAULT_REGION, getReportType } from '@/constants/report-types';
+import { useAuth } from '@/lib/auth-context';
+import { signOut } from '@/lib/auth';
+import { fetchActiveReports, type Report } from '@/lib/reports';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+export default function MapScreen() {
+  const { session } = useAuth();
+  const [region, setRegion] = useState<Region>(DEFAULT_REGION);
+  const [locationGranted, setLocationGranted] = useState(false);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loadError, setLoadError] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') return;
+      setLocationGranted(true);
+      const position = await Location.getCurrentPositionAsync({});
+      setRegion({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        latitudeDelta: 0.02,
+        longitudeDelta: 0.02,
+      });
+    })();
+  }, []);
+
+  const loadReports = async () => {
+    try {
+      setLoadError(false);
+      const data = await fetchActiveReports();
+      setReports(data);
+    } catch {
+      setLoadError(true);
+    }
+  };
+
+  useEffect(() => {
+    loadReports();
+  }, []);
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <View style={styles.container}>
+      <MapView style={StyleSheet.absoluteFill} initialRegion={region} showsUserLocation={locationGranted}>
+        {reports.map((report) => {
+          const type = getReportType(report.type);
+          return (
+            <Marker
+              key={report.id}
+              coordinate={{ latitude: report.latitude, longitude: report.longitude }}
+              title={type.labelFr}
+              pinColor={type.color}
+            />
+          );
+        })}
+      </MapView>
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+      <SafeAreaView style={styles.topBar} pointerEvents="box-none">
+        <View style={styles.topBarRow} pointerEvents="box-none">
+          <View />
+          <Pressable
+            style={styles.accountPill}
+            onPress={() => {
+              if (!session) {
+                router.push('/auth-landing');
+                return;
+              }
+              Alert.alert(session.user.email ?? 'Compte', undefined, [
+                { text: 'Annuler', style: 'cancel' },
+                { text: 'Se déconnecter', style: 'destructive', onPress: () => signOut() },
+              ]);
+            }}>
+            <Text style={styles.accountPillLabel}>{session ? 'Profil' : 'Connexion'}</Text>
+          </Pressable>
+        </View>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
+        {!locationGranted && (
+          <View style={styles.banner}>
+            <Text style={styles.bannerText}>Localisation indisponible</Text>
+          </View>
+        )}
+        {loadError && (
+          <Pressable style={[styles.banner, styles.bannerError]} onPress={loadReports}>
+            <Text style={styles.bannerText}>Impossible de charger les signalements — réessayer</Text>
+          </Pressable>
+        )}
       </SafeAreaView>
-    </ThemedView>
+
+      <SafeAreaView style={styles.fabWrap} pointerEvents="box-none">
+        <Pressable
+          style={styles.fab}
+          onPress={() => {
+            if (!session) {
+              router.push('/auth-landing');
+              return;
+            }
+            Alert.alert('Bientôt disponible', 'La création de signalement arrive dans une prochaine étape.');
+          }}>
+          <Text style={styles.fabLabel}>+</Text>
+        </Pressable>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+  },
+  topBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    padding: 12,
+    gap: 8,
+  },
+  topBarRow: {
     flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  accountPill: {
+    backgroundColor: 'white',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
   },
-  title: {
+  accountPillLabel: {
+    fontWeight: '600',
+    color: '#1D3557',
+  },
+  banner: {
+    backgroundColor: '#1D3557',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+  },
+  bannerError: {
+    backgroundColor: '#C62828',
+  },
+  bannerText: {
+    color: 'white',
+    fontWeight: '600',
     textAlign: 'center',
   },
-  code: {
-    textTransform: 'uppercase',
+  fabWrap: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    padding: 20,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  fab: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#208AEF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  fabLabel: {
+    color: 'white',
+    fontSize: 28,
+    lineHeight: 30,
+    fontWeight: '600',
   },
 });
