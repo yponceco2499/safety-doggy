@@ -216,6 +216,7 @@ The MVP must be functional, stable, and publishable on the Google Play Store —
 5. Position is filled in **automatically from GPS by default** (primary method). Dragging the pin is a **secondary, manual option** for when the automatic position needs adjusting (e.g. GPS drift) or GPS is unavailable; a "Use my location" action snaps the pin back to the GPS position at any time.
 6. Duration is fixed per type (see §4.2) — **not user-editable at creation**, to prevent a report from being kept "active" longer than warranted. A user *can* extend an already-published report's duration from its own detail card if it's still genuinely valid.
 7. Submit → published immediately on the map.
+8. Below the type grid, a **"Suggest a new report type"** link opens a pre-filled mailto to `contact@safetydoggy.app` — the escape valve referenced in §4.2 for gaps in the named type list. *(Implemented 2026-07-25.)*
 
 **Why no free-text description:** a free-text field is the single largest content-moderation and legal-risk surface in the app (harassment, defamation, spam, links) — for a two-person team with no moderation tooling at MVP stage, this isn't worth the risk relative to the value it adds. Instead, provide a simple "Suggest a new report type" contact link (e.g. a mailto), so users can request categories/icons that don't yet exist; you review and add them centrally. The `description` field stays in the data model, unused for now, so this isn't a hard technical wall if you revisit it later.
 

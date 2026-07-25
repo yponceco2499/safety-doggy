@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import * as Location from 'expo-location';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import MapView, { type Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -57,6 +57,15 @@ export default function ReportCreateScreen() {
       newRegion,
     );
     setOutsideArea(distance > MAX_DISTANCE_FROM_LE_HAVRE_METERS);
+  };
+
+  const suggestNewType = () => {
+    Linking.openURL(
+      'mailto:contact@safetydoggy.app?subject=' +
+        encodeURIComponent('Suggestion de nouveau type de signalement') +
+        '&body=' +
+        encodeURIComponent("Bonjour,\n\nJe n'ai pas trouvé de type adapté pour signaler :\n\n"),
+    );
   };
 
   const selectedConfig = selectedType ? REPORT_TYPES.find((t) => t.id === selectedType) : null;
@@ -141,6 +150,10 @@ export default function ReportCreateScreen() {
         ))}
       </View>
 
+      <Pressable onPress={suggestNewType}>
+        <Text style={styles.suggestLink}>Vous ne trouvez pas le type qu'il vous faut ? Suggérer un nouveau type</Text>
+      </Pressable>
+
       {selectedConfig && (
         <Text style={styles.duration}>
           Durée : <Text style={styles.durationValue}>{durationLabel()}</Text>
@@ -208,6 +221,7 @@ const styles = StyleSheet.create({
   typeCardSelected: { borderColor: '#208AEF', borderWidth: 2, backgroundColor: '#EAF4FF' },
   typeIcon: { fontSize: 22 },
   typeLabel: { fontSize: 10, textAlign: 'center' },
+  suggestLink: { fontSize: 12, color: '#208AEF', marginTop: 10 },
   duration: { fontSize: 14, marginTop: 8 },
   durationValue: { fontWeight: '700' },
   mapWrap: { height: 200, borderRadius: 10, overflow: 'hidden', marginTop: 8 },
