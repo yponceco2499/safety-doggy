@@ -10,7 +10,8 @@ export type ReportTypeId =
   | 'shaded_path'
   | 'offleash_area'
   | 'water_point'
-  | 'dog_friendly';
+  | 'dog_friendly'
+  | 'pet_friendly_venue';
 
 export interface ReportTypeConfig {
   id: ReportTypeId;
@@ -32,6 +33,7 @@ export const REPORT_TYPES: ReportTypeConfig[] = [
   { id: 'offleash_area', category: 'positive', color: '#1E88E5', icon: '🐾', labelFr: 'Zone sans laisse', durationHours: null },
   { id: 'water_point', category: 'positive', color: '#1E88E5', icon: '💧', labelFr: "Point d'eau", durationHours: null },
   { id: 'dog_friendly', category: 'positive', color: '#1E88E5', icon: '🏠', labelFr: 'Lieu dog-friendly', durationHours: null },
+  { id: 'pet_friendly_venue', category: 'positive', color: '#1E88E5', icon: '🍽️', labelFr: 'Restaurant / commerce pet-friendly', durationHours: null },
 ];
 
 export function getReportType(id: ReportTypeId): ReportTypeConfig {
