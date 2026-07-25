@@ -114,6 +114,10 @@ export default function ProfileScreen() {
         <Text style={styles.listRowLabel}>Mes signalements</Text>
         <Text style={styles.chevron}>›</Text>
       </Pressable>
+      <Pressable style={styles.listRow} onPress={() => router.push('/faq')}>
+        <Text style={styles.listRowLabel}>Questions fréquentes</Text>
+        <Text style={styles.chevron}>›</Text>
+      </Pressable>
       <Pressable style={styles.listRow} onPress={() => router.push('/terms')}>
         <Text style={styles.listRowLabel}>Conditions d'utilisation</Text>
         <Text style={styles.chevron}>›</Text>
