@@ -369,11 +369,9 @@ React Native + Expo is natively cross-platform — no rewrite required to add iO
 
 ### 6.3 Account Deletion (GDPR)
 
-- Self-service deletion from account settings.
-- Soft delete: `deleted_at` set, account disabled.
+- Self-service deletion from account settings, **immediate** as of 2026-07-28 — see `supabase/functions/delete-account`. A server-side Edge Function (service-role key, never exposed client-side) deletes the Supabase Auth credential itself, which cascades in Postgres per the FK constraints already defined in the schema: `profiles`/`pets`/`walks` rows removed, `flags` rows removed, `reports.user_id` set to NULL (anonymized, retained).
 - Reports created are anonymized (`user_id` → NULL) but retained for community value.
-- Personal account data (email, nickname) purged within 30 days of closure; anonymized report content is retained indefinitely.
-- Full/immediate deletion available on written request via a dedicated contact email (specified in the Terms).
+- Personal account data (email, nickname, dog profiles, walk history) is gone as soon as the deletion request succeeds — not a 30-day grace period, since deletion is now a single atomic server-side operation rather than a manual/delayed process.
 
 ---
 
@@ -389,7 +387,7 @@ React Native + Expo is natively cross-platform — no rewrite required to add iO
 | Right of access | Users can view their own data from their profile |
 | Right to portability | Export on request via email (MVP); dedicated feature possible in V2 |
 | Right to erasure | Self-service account deletion |
-| Retention | Personal data purged within 30 days of account closure; anonymized reports retained indefinitely |
+| Retention | Personal data purged **immediately** on account closure (see §6.3); anonymized reports retained indefinitely |
 | Subprocessors | Supabase (EU hosting option), Google (OAuth) — disclosed in the Privacy Policy |
 | DPO | Not legally required at this scale; a dedicated contact email is required regardless |
 
