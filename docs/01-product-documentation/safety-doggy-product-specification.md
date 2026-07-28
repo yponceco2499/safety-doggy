@@ -165,6 +165,7 @@ The MVP must be functional, stable, and publishable on the Google Play Store —
 | ✅ Positive | Water point for dogs | 🔵 | Permanent* |
 | ✅ Positive | Dog-friendly place | 🔵 | Permanent* |
 | ✅ Positive | Restaurant / pet-friendly business *(added 2026-07-25, see feature proposal #8)* | 🔵 | Permanent* |
+| ✅ Positive | Veterinarian *(added 2026-07-25, see feature proposal #9)* | 🔵 | Permanent* |
 
 \* Permanent reports stay visible until manually deleted by their creator or by moderation, and may be reviewed after 6 months of inactivity.
 
