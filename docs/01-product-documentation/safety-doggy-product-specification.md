@@ -477,6 +477,14 @@ V2 (iOS port + advanced features) launches only when:
 
 This is the "full version" of feature #5 that `docs/05-future-improvements/feature-proposals.md` originally deferred pending exactly this consent design.
 
+**⏸️ Pending — not yet tested on-device (2026-07-28):** `expo-task-manager` (and therefore background location) is not available in Expo Go on Android — confirmed directly in the package's own type definitions. The code fails soft there (GPS toggle shows disabled with an explanatory note instead of crashing — see `lib/walk-tracking.ts`), but the actual tracked-walk flow (consent screen → background permission → tracking through a locked screen → distance persisted on `endWalk`) has **not been exercised on a real device** — it needs an EAS development build, not Expo Go, to test. To resume:
+1. `npx eas-cli login` (Expo account for the `safetydoggys-team` project).
+2. Add a `development` build profile to `eas.json` (doesn't exist yet in the repo).
+3. `npx eas-cli build --profile development --platform android`, install the resulting APK.
+4. `npx expo start --dev-client` and walk through: enabling the GPS toggle → consent modal → granting "Allow all the time" → locking the screen mid-walk → confirming distance keeps accumulating → ending the walk → checking `distance_km` and the per-dog dashboard.
+
+Everything else in this section (dog profiles, light walk sessions, the dashboard) works today in Expo Go and has been tested.
+
 **Full moderation dashboard** — a simple UI over the `flags` table (currently only reviewable via the raw Supabase dashboard), plus visibility for moderators into who flagged what, to catch coordinated abuse of the flagging system itself. The auto-deactivation threshold (4 flags) is already live in the MVP as of §4.7; this V2 item is just the dashboard layer on top.
 
 **User reputation system** — reliability score from report/confirmation history, shown on report cards. Includes the option to attach an optional photo to a report, to strengthen credibility and engagement.
