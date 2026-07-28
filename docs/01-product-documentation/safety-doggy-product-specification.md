@@ -238,7 +238,7 @@ The MVP must be functional, stable, and publishable on the Google Play Store —
 - The load query filters: `WHERE expires_at > NOW() OR expires_at IS NULL`.
 - Permanent reports: `expires_at = NULL`.
 - Creators can extend an active report's duration from its own detail card.
-- A scheduled job (Supabase Edge Function / cron) runs hourly to purge expired reports.
+- A scheduled `pg_cron` job runs hourly to flip `is_active` to false on expired reports *(implemented 2026-07-28, see `supabase/008_purge_expired_reports.sql`)*. This job only keeps `is_active` accurate in the database itself — reports are already invisible to users the moment they expire regardless, since every read query filters on `expires_at` directly.
 
 > ⚙️ Expiration is enforced server-side, not just client-side, so all users see a consistent map regardless of device or cache state.
 

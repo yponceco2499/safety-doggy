@@ -120,10 +120,5 @@ create policy "Logged-in users can flag a report"
 
 -- ---------------------------------------------------------------------------
 -- Scheduled cleanup — hourly purge of expired reports (spec §4.6)
--- Wire this up as a Supabase Edge Function + cron trigger (pg_cron or
--- Supabase's scheduled Edge Functions), calling:
---   update public.reports set is_active = false
---   where is_active and expires_at is not null and expires_at <= now();
--- Kept as a comment here rather than a pg_cron job so it's visible in one
--- place; move to an actual Edge Function when that's set up.
+-- Implemented 2026-07-28 via pg_cron — see 008_purge_expired_reports.sql.
 -- ---------------------------------------------------------------------------
