@@ -113,7 +113,7 @@ Android-only is a deliberate MVP constraint, not a permanent exclusion — see �
 | Free-text description on reports | ❌ Removed from MVP (see §4.5) |
 | Nickname displayed on reports | ❌ Not shown publicly (see §4.4) |
 | Proximity push notifications | ❌ V2 |
-| Personal dog profiles + lightweight walk stats *(added 2026-07-25, see feature proposals #2 + #5 — explicit start/stop session, no location data recorded)* | ✅ Yes |
+| Personal dog profiles + walk stats, with opt-in GPS distance tracking *(added 2026-07-25, see feature proposals #2 + #5 — explicit start/stop session; distance tracking requires explicit consent, see §4.5a)* | ✅ Yes |
 | User reputation system | ❌ V2 |
 | Optional report photo *(added 2026-07-25, see feature proposal #10 — always optional, never blocks publishing)* | ✅ Yes |
 | Offline mode | ❌ V2 |
@@ -462,7 +462,20 @@ V2 (iOS port + advanced features) launches only when:
 
 **Proximity push notifications** — alert users to hazards within a configurable radius, via Expo Notifications + Firebase Cloud Messaging (free).
 
-**Walk history (full version)** — opt-in GPS trace recording, frequented-area visualization, personal stats (distance, frequency). Requires explicit GDPR consent. *(A lightweight version shipped 2026-07-25 instead — explicit start/stop walk sessions with an optional linked dog profile, no location data recorded at all, so no GDPR consent question arises. See feature proposals #2 + #5.)*
+**Walk history** — *(shipped 2026-07-25, see feature proposals #2 + #5 and §4.5a below)*. Frequented-area visualization is not built (no raw path is ever stored — see §4.5a for why); everything else in this section shipped: personal dog profiles, per-walk and per-dog stats (count, distance, duration).
+
+#### 4.5a Walk Sessions & Distance Tracking (added 2026-07-25)
+
+**Dog profiles ("Mes chiens"):** optional, strictly personal (name + optional breed). Never attached to a report or shown publicly — the anonymity rule in §4.4 stays intact.
+
+**Walk sessions:** explicit "Démarrer une sortie" / "Terminer la sortie" buttons record `started_at`/`ended_at` on a `walks` row, optionally linked to a dog. No location data by default — this alone powers a "number of walks" / "time spent walking" dashboard, grouped by dog, at essentially no privacy cost.
+
+**Distance tracking (opt-in):** a per-walk toggle enables GPS distance tracking, which requires:
+- **Foreground, then background ("Allow all the time") location permission** — tracking continues while the screen is locked or the app is backgrounded, so a walk's distance doesn't stop counting the moment the phone goes in a pocket.
+- **A one-time explicit consent screen**, shown before the first tracked walk, recorded as `profiles.walk_tracking_consent_at`. Declining (or declining the OS permission prompt) always falls back to a walk with no distance recorded — this can never block starting a walk.
+- **Privacy-by-design data minimization:** only the final computed distance is persisted (`walks.distance_km`) — individual GPS points are used to update a running total and then discarded, never stored as a path/route. A visible Android foreground-service notification stays up for the whole tracked walk, so tracking is never silent.
+
+This is the "full version" of feature #5 that `docs/05-future-improvements/feature-proposals.md` originally deferred pending exactly this consent design.
 
 **Full moderation dashboard** — a simple UI over the `flags` table (currently only reviewable via the raw Supabase dashboard), plus visibility for moderators into who flagged what, to catch coordinated abuse of the flagging system itself. The auto-deactivation threshold (4 flags) is already live in the MVP as of §4.7; this V2 item is just the dashboard layer on top.
 
