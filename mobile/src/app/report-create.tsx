@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import * as Location from 'expo-location';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MapView, { type Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -124,87 +124,92 @@ export default function ReportCreateScreen() {
         <Text style={styles.title}>Nouveau signalement</Text>
       </View>
 
-      <Text style={styles.groupLabel}>⚠ Dangers</Text>
-      <View style={styles.grid}>
-        {REPORT_TYPES.filter((t) => t.category === 'hazard').map((t) => (
-          <Pressable
-            key={t.id}
-            style={[styles.typeCard, selectedType === t.id && styles.typeCardSelected]}
-            onPress={() => setSelectedType(t.id)}>
-            <Text style={styles.typeIcon}>{t.icon}</Text>
-            <Text style={styles.typeLabel}>{t.labelFr}</Text>
-          </Pressable>
-        ))}
-      </View>
-
-      <Text style={styles.groupLabel}>✅ Points positifs</Text>
-      <View style={styles.grid}>
-        {REPORT_TYPES.filter((t) => t.category === 'positive').map((t) => (
-          <Pressable
-            key={t.id}
-            style={[styles.typeCard, selectedType === t.id && styles.typeCardSelected]}
-            onPress={() => setSelectedType(t.id)}>
-            <Text style={styles.typeIcon}>{t.icon}</Text>
-            <Text style={styles.typeLabel}>{t.labelFr}</Text>
-          </Pressable>
-        ))}
-      </View>
-
-      <Pressable onPress={suggestNewType}>
-        <Text style={styles.suggestLink}>Vous ne trouvez pas le type qu'il vous faut ? Suggérer un nouveau type</Text>
-      </Pressable>
-
-      {selectedConfig && (
-        <Text style={styles.duration}>
-          Durée : <Text style={styles.durationValue}>{durationLabel()}</Text>
-        </Text>
-      )}
-
-      <View style={styles.mapWrap}>
-        <MapView
-          ref={mapRef}
-          style={StyleSheet.absoluteFill}
-          initialRegion={region}
-          onRegionChangeComplete={handleRegionChangeComplete}
-        />
-        <View style={styles.centerPin} pointerEvents="none">
-          <Text style={styles.centerPinIcon}>📍</Text>
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <Text style={styles.groupLabel}>⚠ Dangers</Text>
+        <View style={styles.grid}>
+          {REPORT_TYPES.filter((t) => t.category === 'hazard').map((t) => (
+            <Pressable
+              key={t.id}
+              style={[styles.typeCard, selectedType === t.id && styles.typeCardSelected]}
+              onPress={() => setSelectedType(t.id)}>
+              <Text style={styles.typeIcon}>{t.icon}</Text>
+              <Text style={styles.typeLabel}>{t.labelFr}</Text>
+            </Pressable>
+          ))}
         </View>
-      </View>
 
-      <Text style={styles.positionLabel}>
-        {!gpsAvailable
-          ? '⚠️ Localisation indisponible — placez le repère manuellement'
-          : usingGps
-            ? '📍 Position détectée automatiquement'
-            : 'Position ajustée manuellement'}
-      </Text>
-      {!usingGps && gpsAvailable && (
-        <Pressable onPress={goToMyLocation}>
-          <Text style={styles.link}>Utiliser ma position</Text>
+        <Text style={styles.groupLabel}>✅ Points positifs</Text>
+        <View style={styles.grid}>
+          {REPORT_TYPES.filter((t) => t.category === 'positive').map((t) => (
+            <Pressable
+              key={t.id}
+              style={[styles.typeCard, selectedType === t.id && styles.typeCardSelected]}
+              onPress={() => setSelectedType(t.id)}>
+              <Text style={styles.typeIcon}>{t.icon}</Text>
+              <Text style={styles.typeLabel}>{t.labelFr}</Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <Pressable onPress={suggestNewType}>
+          <Text style={styles.suggestLink}>Vous ne trouvez pas le type qu'il vous faut ? Suggérer un nouveau type</Text>
         </Pressable>
-      )}
-      {outsideArea && (
-        <Text style={styles.error}>Safety Doggy couvre uniquement la zone du Havre pour le moment.</Text>
-      )}
 
-      {error && <Text style={styles.error}>{error}</Text>}
+        {selectedConfig && (
+          <Text style={styles.duration}>
+            Durée : <Text style={styles.durationValue}>{durationLabel()}</Text>
+          </Text>
+        )}
 
-      <Pressable
-        style={[styles.submitButton, (!selectedType || outsideArea || submitting) && styles.submitButtonDisabled]}
-        disabled={!selectedType || outsideArea || submitting}
-        onPress={submit}>
-        {submitting ? <ActivityIndicator color="white" /> : <Text style={styles.submitLabel}>Publier</Text>}
-      </Pressable>
+        <View style={styles.mapWrap}>
+          <MapView
+            ref={mapRef}
+            style={StyleSheet.absoluteFill}
+            initialRegion={region}
+            onRegionChangeComplete={handleRegionChangeComplete}
+          />
+          <View style={styles.centerPin} pointerEvents="none">
+            <Text style={styles.centerPinIcon}>📍</Text>
+          </View>
+        </View>
+
+        <Text style={styles.positionLabel}>
+          {!gpsAvailable
+            ? '⚠️ Localisation indisponible — placez le repère manuellement'
+            : usingGps
+              ? '📍 Position détectée automatiquement'
+              : 'Position ajustée manuellement'}
+        </Text>
+        {!usingGps && gpsAvailable && (
+          <Pressable onPress={goToMyLocation}>
+            <Text style={styles.link}>Utiliser ma position</Text>
+          </Pressable>
+        )}
+        {outsideArea && (
+          <Text style={styles.error}>Safety Doggy couvre uniquement la zone du Havre pour le moment.</Text>
+        )}
+
+        {error && <Text style={styles.error}>{error}</Text>}
+      </ScrollView>
+
+      <View style={styles.footer}>
+        <Pressable
+          style={[styles.submitButton, (!selectedType || outsideArea || submitting) && styles.submitButtonDisabled]}
+          disabled={!selectedType || outsideArea || submitting}
+          onPress={submit}>
+          {submitting ? <ActivityIndicator color="white" /> : <Text style={styles.submitLabel}>Publier</Text>}
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, gap: 8 },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 4 },
+  container: { flex: 1 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingTop: 12, marginBottom: 4 },
   back: { fontSize: 22 },
   title: { fontSize: 20, fontWeight: '700' },
+  scrollContent: { padding: 16, paddingTop: 4, gap: 8 },
   groupLabel: { fontSize: 13, color: '#555', marginTop: 8 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   typeCard: {
@@ -236,12 +241,12 @@ const styles = StyleSheet.create({
   positionLabel: { fontSize: 13, color: '#555', marginTop: 6 },
   link: { color: '#208AEF', fontWeight: '600' },
   error: { color: '#C62828', fontSize: 13, marginTop: 4 },
+  footer: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 },
   submitButton: {
     backgroundColor: '#208AEF',
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: 12,
   },
   submitButtonDisabled: { opacity: 0.5 },
   submitLabel: { color: 'white', fontWeight: '700' },
