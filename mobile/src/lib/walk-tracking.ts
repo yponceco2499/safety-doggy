@@ -38,10 +38,24 @@ TaskManager.defineTask(TASK_NAME, async ({ data, error }) => {
   await AsyncStorage.setItem(STORAGE_KEY_LAST_POINT, JSON.stringify(lastPoint));
 });
 
+// TaskManager (and therefore background location) isn't available in Expo
+// Go on Android — it needs a development/production build. Every exported
+// function below checks this first and fails soft (never throws), so a
+// walk always falls back to the untracked version instead of crashing.
+export async function isWalkTrackingAvailable(): Promise<boolean> {
+  try {
+    return await TaskManager.isAvailableAsync();
+  } catch {
+    return false;
+  }
+}
+
 // Foreground permission first (required before background can be granted),
 // then background ("Allow all the time") — returns false if either step is
-// declined, so the caller can fall back to a walk with no distance tracked.
+// declined (or tracking isn't available at all), so the caller can fall
+// back to a walk with no distance tracked.
 export async function requestWalkTrackingPermissions(): Promise<boolean> {
+  if (!(await isWalkTrackingAvailable())) return false;
   const foreground = await Location.requestForegroundPermissionsAsync();
   if (foreground.status !== 'granted') return false;
   const background = await Location.requestBackgroundPermissionsAsync();
@@ -49,6 +63,7 @@ export async function requestWalkTrackingPermissions(): Promise<boolean> {
 }
 
 export async function startWalkTracking(): Promise<void> {
+  if (!(await isWalkTrackingAvailable())) return;
   await AsyncStorage.multiRemove([STORAGE_KEY_DISTANCE, STORAGE_KEY_LAST_POINT]);
   await Location.startLocationUpdatesAsync(TASK_NAME, {
     accuracy: Location.Accuracy.Balanced,
@@ -63,8 +78,7 @@ export async function startWalkTracking(): Promise<void> {
 
 // Stops the background task and returns the total distance walked, in km.
 export async function stopWalkTracking(): Promise<number> {
-  const isRegistered = await TaskManager.isTaskRegisteredAsync(TASK_NAME);
-  if (isRegistered) {
+  if (await isWalkTrackingActive()) {
     await Location.stopLocationUpdatesAsync(TASK_NAME);
   }
   const totalMeters = Number((await AsyncStorage.getItem(STORAGE_KEY_DISTANCE)) ?? '0');
@@ -73,5 +87,10 @@ export async function stopWalkTracking(): Promise<number> {
 }
 
 export async function isWalkTrackingActive(): Promise<boolean> {
-  return TaskManager.isTaskRegisteredAsync(TASK_NAME);
+  if (!(await isWalkTrackingAvailable())) return false;
+  try {
+    return await TaskManager.isTaskRegisteredAsync(TASK_NAME);
+  } catch {
+    return false;
+  }
 }

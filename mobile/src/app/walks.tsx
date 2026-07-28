@@ -7,7 +7,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/lib/auth-context';
 import { fetchMyPets, type Pet } from '@/lib/pets';
 import { fetchProfile, grantWalkTrackingConsent, type Profile } from '@/lib/profile';
-import { isWalkTrackingActive, requestWalkTrackingPermissions, startWalkTracking, stopWalkTracking } from '@/lib/walk-tracking';
+import {
+  isWalkTrackingActive,
+  isWalkTrackingAvailable,
+  requestWalkTrackingPermissions,
+  startWalkTracking,
+  stopWalkTracking,
+} from '@/lib/walk-tracking';
 import {
   endWalk,
   fetchActiveWalk,
@@ -30,6 +36,7 @@ export default function WalksScreen() {
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
   const [trackGps, setTrackGps] = useState(false);
   const [tracking, setTracking] = useState(false);
+  const [trackingAvailable, setTrackingAvailable] = useState(true);
   const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
   const [showConsent, setShowConsent] = useState(false);
@@ -42,12 +49,14 @@ export default function WalksScreen() {
       fetchActiveWalk(session.user.id),
       fetchProfile(session.user.id),
       isWalkTrackingActive(),
-    ]).then(([petsData, walksData, active, profileData, trackingActive]) => {
+      isWalkTrackingAvailable(),
+    ]).then(([petsData, walksData, active, profileData, trackingActive, available]) => {
       setPets(petsData);
       setWalks(walksData);
       setActiveWalk(active);
       setProfile(profileData);
       setTracking(trackingActive);
+      setTrackingAvailable(available);
       setLoaded(true);
     });
   }, [session?.user?.id]);
@@ -195,8 +204,13 @@ export default function WalksScreen() {
           )}
           <View style={styles.gpsRow}>
             <Text style={styles.gpsLabel}>📍 Suivre la distance (GPS)</Text>
-            <Switch value={trackGps} onValueChange={setTrackGps} />
+            <Switch value={trackGps && trackingAvailable} onValueChange={setTrackGps} disabled={!trackingAvailable} />
           </View>
+          {!trackingAvailable && (
+            <Text style={styles.gpsUnavailable}>
+              Indisponible dans cette préversion Expo Go — nécessite un build de développement de l'app.
+            </Text>
+          )}
           <Pressable style={styles.startButton} onPress={handleStart} disabled={busy}>
             {busy ? <ActivityIndicator color="white" /> : <Text style={styles.startButtonLabel}>Démarrer une sortie</Text>}
           </Pressable>
@@ -273,6 +287,7 @@ const styles = StyleSheet.create({
   petChipLabelSelected: { color: '#208AEF', fontWeight: '700' },
   gpsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   gpsLabel: { fontSize: 14 },
+  gpsUnavailable: { fontSize: 12, color: '#999', marginTop: -4 },
   startButton: { backgroundColor: '#208AEF', borderRadius: 10, paddingVertical: 14, alignItems: 'center' },
   startButtonLabel: { color: 'white', fontWeight: '700' },
   empty: { textAlign: 'center', color: '#777', marginTop: 24 },
