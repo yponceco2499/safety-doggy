@@ -113,7 +113,7 @@ Android-only is a deliberate MVP constraint, not a permanent exclusion — see �
 | Free-text description on reports | ❌ Removed from MVP (see §4.5) |
 | Nickname displayed on reports | ❌ Not shown publicly (see §4.4) |
 | Proximity push notifications | ❌ V2 |
-| Walk history | ❌ V2 |
+| Personal dog profiles + lightweight walk stats *(added 2026-07-25, see feature proposals #2 + #5 — explicit start/stop session, no location data recorded)* | ✅ Yes |
 | User reputation system | ❌ V2 |
 | Optional report photo *(added 2026-07-25, see feature proposal #10 — always optional, never blocks publishing)* | ✅ Yes |
 | Offline mode | ❌ V2 |
@@ -462,7 +462,7 @@ V2 (iOS port + advanced features) launches only when:
 
 **Proximity push notifications** — alert users to hazards within a configurable radius, via Expo Notifications + Firebase Cloud Messaging (free).
 
-**Walk history** — opt-in GPS trace recording, frequented-area visualization, personal stats (distance, frequency). Requires explicit GDPR consent.
+**Walk history (full version)** — opt-in GPS trace recording, frequented-area visualization, personal stats (distance, frequency). Requires explicit GDPR consent. *(A lightweight version shipped 2026-07-25 instead — explicit start/stop walk sessions with an optional linked dog profile, no location data recorded at all, so no GDPR consent question arises. See feature proposals #2 + #5.)*
 
 **Full moderation dashboard** — a simple UI over the `flags` table (currently only reviewable via the raw Supabase dashboard), plus visibility for moderators into who flagged what, to catch coordinated abuse of the flagging system itself. The auto-deactivation threshold (4 flags) is already live in the MVP as of §4.7; this V2 item is just the dashboard layer on top.
 

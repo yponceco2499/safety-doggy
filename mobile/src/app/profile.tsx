@@ -114,6 +114,14 @@ export default function ProfileScreen() {
         <Text style={styles.listRowLabel}>Mes signalements</Text>
         <Text style={styles.chevron}>›</Text>
       </Pressable>
+      <Pressable style={styles.listRow} onPress={() => router.push('/pets')}>
+        <Text style={styles.listRowLabel}>Mes chiens</Text>
+        <Text style={styles.chevron}>›</Text>
+      </Pressable>
+      <Pressable style={styles.listRow} onPress={() => router.push('/walks')}>
+        <Text style={styles.listRowLabel}>Mes sorties</Text>
+        <Text style={styles.chevron}>›</Text>
+      </Pressable>
       <Pressable style={styles.listRow} onPress={() => router.push('/faq')}>
         <Text style={styles.listRowLabel}>Questions fréquentes</Text>
         <Text style={styles.chevron}>›</Text>
