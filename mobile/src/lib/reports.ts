@@ -1,3 +1,6 @@
+import { decode } from 'base64-arraybuffer';
+import * as FileSystem from 'expo-file-system/legacy';
+
 import type { ReportCategory, ReportTypeId } from '@/constants/report-types';
 import { getReportType } from '@/constants/report-types';
 import { supabase } from './supabase';
@@ -12,6 +15,24 @@ export interface Report {
   created_at: string;
   expires_at: string | null;
   is_active: boolean;
+  photo_url: string | null;
+}
+
+// Uploads a picked image to the "report-photos" bucket and returns its
+// public URL. The path is namespaced under the uploader's own user id to
+// match the storage RLS policy (see supabase/005_report_photo.sql).
+export async function uploadReportPhoto(userId: string, localUri: string): Promise<string> {
+  const base64 = await FileSystem.readAsStringAsync(localUri, { encoding: 'base64' });
+  const extension = localUri.split('.').pop()?.toLowerCase() ?? 'jpg';
+  const path = `${userId}/${Date.now()}-${Math.round(Math.random() * 1e9)}.${extension}`;
+
+  const { error } = await supabase.storage.from('report-photos').upload(path, decode(base64), {
+    contentType: `image/${extension === 'jpg' ? 'jpeg' : extension}`,
+  });
+  if (error) throw error;
+
+  const { data } = supabase.storage.from('report-photos').getPublicUrl(path);
+  return data.publicUrl;
 }
 
 export async function fetchActiveReports(): Promise<Report[]> {
@@ -88,6 +109,7 @@ export async function createReport(
   userId: string,
   type: ReportTypeId,
   coords: { latitude: number; longitude: number },
+  photoUrl?: string | null,
 ) {
   const config = getReportType(type);
   const expiresAt = config.durationHours == null ? null : new Date(Date.now() + config.durationHours * 3600 * 1000).toISOString();
@@ -102,6 +124,7 @@ export async function createReport(
       longitude: coords.longitude,
       expires_at: expiresAt,
       is_active: true,
+      photo_url: photoUrl ?? null,
     })
     .select()
     .single();

@@ -38,6 +38,13 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Safety Doggy utilise votre position pour centrer la carte et pré-remplir vos signalements."
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Safety Doggy utilise vos photos pour illustrer un signalement (optionnel).",
+          "cameraPermission": "Safety Doggy utilise l'appareil photo pour illustrer un signalement (optionnel)."
+        }
       ]
     ],
     "experiments": {

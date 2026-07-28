@@ -115,7 +115,7 @@ Android-only is a deliberate MVP constraint, not a permanent exclusion — see �
 | Proximity push notifications | ❌ V2 |
 | Walk history | ❌ V2 |
 | User reputation system | ❌ V2 |
-| Report photos | ❌ V2 |
+| Optional report photo *(added 2026-07-25, see feature proposal #10 — always optional, never blocks publishing)* | ✅ Yes |
 | Offline mode | ❌ V2 |
 | iOS version | ❌ V2 |
 | Monetization / advertising | ❌ V2/V3 |
@@ -219,6 +219,7 @@ The MVP must be functional, stable, and publishable on the Google Play Store —
 6. Duration is fixed per type (see §4.2) — **not user-editable at creation**, to prevent a report from being kept "active" longer than warranted. A user *can* extend an already-published report's duration from its own detail card if it's still genuinely valid.
 7. Submit → published immediately on the map.
 8. Below the type grid, a **"Suggest a new report type"** link opens a pre-filled mailto to `contact@safetydoggy.app` — the escape valve referenced in §4.2 for gaps in the named type list. *(Implemented 2026-07-25.)*
+9. An **optional photo** can be attached ("Add a photo (optional)") — same rules as the free-text field it sits next to: **never required, never blocks Publish**. See feature proposal #10 (2026-07-25 confirmation) for the moderation-risk reasoning that kept this optional rather than making it a stronger verification signal.
 
 **Why no free-text description:** a free-text field is the single largest content-moderation and legal-risk surface in the app (harassment, defamation, spam, links) — for a two-person team with no moderation tooling at MVP stage, this isn't worth the risk relative to the value it adds. Instead, provide a simple "Suggest a new report type" contact link (e.g. a mailto), so users can request categories/icons that don't yet exist; you review and add them centrally. The `description` field stays in the data model, unused for now, so this isn't a hard technical wall if you revisit it later.
 
