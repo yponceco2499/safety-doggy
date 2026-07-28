@@ -31,18 +31,15 @@ export async function grantWalkTrackingConsent(userId: string): Promise<void> {
   if (error) throw error;
 }
 
-// Anonymizes the user's reports and soft-deletes their profile row.
-// Note: this does not remove the underlying Supabase Auth credentials
-// (email/password) — that still needs a manual dashboard step or a future
-// admin-privileged Edge Function. The caller should sign the user out
-// immediately after this succeeds.
-export async function deleteAccount(userId: string): Promise<void> {
-  const { error: reportsError } = await supabase.from('reports').update({ user_id: null }).eq('user_id', userId);
-  if (reportsError) throw reportsError;
-
-  const { error: profileError } = await supabase
-    .from('profiles')
-    .update({ deleted_at: new Date().toISOString(), nickname: null, avatar_url: null })
-    .eq('id', userId);
-  if (profileError) throw profileError;
+// Deletes the user's Supabase Auth credentials via the delete-account Edge
+// Function (see supabase/functions/delete-account) — the client has no
+// permission to remove an auth.users row directly, and never should (that
+// requires the service_role key). Everything else — anonymizing the
+// user's reports, removing their profile/pets/walks — happens
+// automatically via the "on delete cascade"/"on delete set null" foreign
+// keys already defined in the schema, not as separate client calls here.
+// The caller should sign the user out immediately after this succeeds.
+export async function deleteAccount(): Promise<void> {
+  const { error } = await supabase.functions.invoke('delete-account', { method: 'POST' });
+  if (error) throw error;
 }

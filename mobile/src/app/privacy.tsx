@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const BODY = [
   '1. Données collectées — Email, surnom (optionnel), photo de profil (optionnelle), date d\'inscription.',
   '2. Finalité — Ces données servent uniquement à sécuriser et responsabiliser les signalements.',
-  '3. Conservation — Les données personnelles sont supprimées dans les 30 jours suivant la clôture du compte. Les signalements sont conservés anonymisés.',
+  '3. Conservation — Vos données personnelles (profil, chiens, sorties, identifiants de connexion) sont supprimées immédiatement à la clôture du compte. Les signalements sont conservés, anonymisés.',
   '4. Vos droits — Accès, rectification, suppression : contact@safetydoggy.app.',
   '(Texte provisoire — le texte légal définitif sera rédigé avant le lancement.)',
 ];

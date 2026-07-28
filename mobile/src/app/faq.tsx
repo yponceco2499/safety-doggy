@@ -25,7 +25,7 @@ const ITEMS = [
   },
   {
     q: 'Est-ce que je peux supprimer mon compte ?',
-    a: "Oui, à tout moment depuis votre profil. Vos données personnelles sont supprimées sous 30 jours ; vos signalements restent visibles mais sont anonymisés.",
+    a: "Oui, à tout moment depuis votre profil. Vos données personnelles sont supprimées immédiatement ; vos signalements restent visibles mais sont anonymisés.",
   },
 ];
 

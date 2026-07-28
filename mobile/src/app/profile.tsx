@@ -51,7 +51,7 @@ export default function ProfileScreen() {
   const handleDeleteAccount = () => {
     Alert.alert(
       'Supprimer votre compte ?',
-      "Vos signalements restent sur la carte, anonymisés. Vos données personnelles sont supprimées sous 30 jours.",
+      "Vos signalements restent sur la carte, anonymisés. Le reste de vos données (profil, chiens, sorties) et vos identifiants de connexion sont supprimés immédiatement — cette action est irréversible.",
       [
         { text: 'Annuler', style: 'cancel' },
         {
@@ -60,7 +60,7 @@ export default function ProfileScreen() {
           onPress: async () => {
             setBusy(true);
             try {
-              await deleteAccount(session.user.id);
+              await deleteAccount();
               await signOut();
               router.replace('/');
             } finally {
