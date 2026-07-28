@@ -84,6 +84,13 @@ export default function MapScreen() {
           <Pressable
             style={styles.accountPill}
             onPress={() => {
+              router.push(session ? '/walks' : '/auth-landing');
+            }}>
+            <Text style={styles.accountPillLabel}>🐕 Sortie</Text>
+          </Pressable>
+          <Pressable
+            style={styles.accountPill}
+            onPress={() => {
               router.push(session ? '/profile' : '/auth-landing');
             }}>
             <Text style={styles.accountPillLabel}>{session ? 'Profil' : 'Connexion'}</Text>

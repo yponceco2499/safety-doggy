@@ -6,6 +6,7 @@ export interface Profile {
   avatar_url: string | null;
   created_at: string;
   deleted_at: string | null;
+  walk_tracking_consent_at: string | null;
 }
 
 export async function fetchProfile(userId: string): Promise<Profile> {
@@ -16,6 +17,17 @@ export async function fetchProfile(userId: string): Promise<Profile> {
 
 export async function updateNickname(userId: string, nickname: string): Promise<void> {
   const { error } = await supabase.from('profiles').update({ nickname }).eq('id', userId);
+  if (error) throw error;
+}
+
+// Records explicit, informed consent to background GPS tracking during a
+// walk session (see walk-tracking-consent.tsx for the explanation shown
+// before this is called). Required before any tracked walk can start.
+export async function grantWalkTrackingConsent(userId: string): Promise<void> {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ walk_tracking_consent_at: new Date().toISOString() })
+    .eq('id', userId);
   if (error) throw error;
 }
 

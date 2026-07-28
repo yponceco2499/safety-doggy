@@ -36,7 +36,8 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Safety Doggy utilise votre position pour centrer la carte et pré-remplir vos signalements."
+          "locationAlwaysAndWhenInUsePermission": "Safety Doggy utilise votre position pour centrer la carte et pré-remplir vos signalements. Si vous activez le suivi de distance sur une sortie, elle est aussi utilisée en arrière-plan le temps de la sortie pour calculer la distance parcourue.",
+          "isAndroidBackgroundLocationEnabled": true
         }
       ],
       [
