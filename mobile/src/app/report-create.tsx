@@ -124,7 +124,7 @@ export default function ReportCreateScreen() {
         <Text style={styles.title}>Nouveau signalement</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <Text style={styles.groupLabel}>⚠ Dangers</Text>
         <View style={styles.grid}>
           {REPORT_TYPES.filter((t) => t.category === 'hazard').map((t) => (
@@ -209,6 +209,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingTop: 12, marginBottom: 4 },
   back: { fontSize: 22 },
   title: { fontSize: 20, fontWeight: '700' },
+  scroll: { flex: 1 },
   scrollContent: { padding: 16, paddingTop: 4, gap: 8 },
   groupLabel: { fontSize: 13, color: '#555', marginTop: 8 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
