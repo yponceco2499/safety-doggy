@@ -1,13 +1,14 @@
 import { router } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MapView, { type Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { DEFAULT_REGION, REPORT_TYPES, type ReportTypeId } from '@/constants/report-types';
 import { useAuth } from '@/lib/auth-context';
-import { countReportsLastHour, createReport, distanceMeters, findNearbyDuplicate } from '@/lib/reports';
+import { countReportsLastHour, createReport, distanceMeters, findNearbyDuplicate, uploadReportPhoto } from '@/lib/reports';
 
 const MAX_DISTANCE_FROM_LE_HAVRE_METERS = 30000;
 
@@ -21,7 +22,17 @@ export default function ReportCreateScreen() {
   const [outsideArea, setOutsideArea] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
   const isProgrammaticMove = useRef(false);
+
+  const pickPhoto = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') return;
+    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.6 });
+    if (!result.canceled && result.assets[0]) {
+      setPhotoUri(result.assets[0].uri);
+    }
+  };
 
   const goToMyLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -106,7 +117,17 @@ export default function ReportCreateScreen() {
         }
       }
 
-      await createReport(session.user.id, selectedType, region);
+      let photoUrl: string | null = null;
+      if (photoUri) {
+        try {
+          photoUrl = await uploadReportPhoto(session.user.id, photoUri);
+        } catch {
+          // Photo is optional and must never block publishing — continue without it.
+          photoUrl = null;
+        }
+      }
+
+      await createReport(session.user.id, selectedType, region, photoUrl);
       router.back();
     } catch {
       setError('Une erreur est survenue. Réessayez.');
@@ -159,6 +180,19 @@ export default function ReportCreateScreen() {
           <Text style={styles.duration}>
             Durée : <Text style={styles.durationValue}>{durationLabel()}</Text>
           </Text>
+        )}
+
+        {photoUri ? (
+          <View style={styles.photoPreviewWrap}>
+            <Image source={{ uri: photoUri }} style={styles.photoPreview} />
+            <Pressable onPress={() => setPhotoUri(null)}>
+              <Text style={styles.suggestLink}>Retirer la photo</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <Pressable onPress={pickPhoto}>
+            <Text style={styles.suggestLink}>📷 Ajouter une photo (optionnel)</Text>
+          </Pressable>
         )}
 
         <View style={styles.mapWrap}>
@@ -229,6 +263,8 @@ const styles = StyleSheet.create({
   typeLabel: { fontSize: 10, textAlign: 'center' },
   suggestLink: { fontSize: 12, color: '#208AEF', marginTop: 10 },
   duration: { fontSize: 14, marginTop: 8 },
+  photoPreviewWrap: { marginTop: 8, gap: 6 },
+  photoPreview: { width: '100%', height: 160, borderRadius: 10 },
   durationValue: { fontWeight: '700' },
   mapWrap: { height: 200, borderRadius: 10, overflow: 'hidden', marginTop: 8 },
   centerPin: {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { getReportType } from '@/constants/report-types';
 import { deleteReport, extendReport, flagReport, type Report } from '@/lib/reports';
@@ -82,6 +82,8 @@ export function ReportDetailSheet({ report, currentUserId, onClose, onUpdated, o
           <Text style={styles.label}>{type.labelFr}</Text>
         </View>
 
+        {report.photo_url && <Image source={{ uri: report.photo_url }} style={styles.photo} />}
+
         <Text style={styles.meta}>Signalé le {formatDate(report.created_at)}</Text>
         {expired ? (
           <Text style={styles.expired}>Ce signalement a expiré.</Text>
@@ -145,6 +147,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  photo: { width: '100%', height: 180, borderRadius: 12 },
   iconBubble: {
     width: 36,
     height: 36,
