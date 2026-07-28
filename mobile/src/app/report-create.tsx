@@ -25,13 +25,30 @@ export default function ReportCreateScreen() {
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const isProgrammaticMove = useRef(false);
 
-  const pickPhoto = async () => {
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') return;
+    const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.6 });
+    if (!result.canceled && result.assets[0]) {
+      setPhotoUri(result.assets[0].uri);
+    }
+  };
+
+  const pickFromLibrary = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') return;
     const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.6 });
     if (!result.canceled && result.assets[0]) {
       setPhotoUri(result.assets[0].uri);
     }
+  };
+
+  const pickPhoto = () => {
+    Alert.alert('Ajouter une photo', undefined, [
+      { text: 'Annuler', style: 'cancel' },
+      { text: 'Prendre une photo', onPress: takePhoto },
+      { text: 'Choisir dans la galerie', onPress: pickFromLibrary },
+    ]);
   };
 
   const goToMyLocation = async () => {

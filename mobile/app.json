@@ -42,7 +42,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Safety Doggy utilise vos photos pour illustrer un signalement (optionnel)."
+          "photosPermission": "Safety Doggy utilise vos photos pour illustrer un signalement (optionnel).",
+          "cameraPermission": "Safety Doggy utilise l'appareil photo pour illustrer un signalement (optionnel)."
         }
       ]
     ],
