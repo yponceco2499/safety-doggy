@@ -70,7 +70,7 @@ export async function startWalkTracking(): Promise<void> {
     distanceInterval: 15,
     timeInterval: 10000,
     foregroundService: {
-      notificationTitle: 'Safety Doggy',
+      notificationTitle: 'SafetyPet',
       notificationBody: 'Suivi de votre sortie en cours…',
     },
   });

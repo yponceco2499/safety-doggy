@@ -1,4 +1,4 @@
--- Safety Doggy — initial schema
+-- SafetyPet — initial schema
 -- Run this in the Supabase SQL editor (or via `supabase db push` once the CLI is linked).
 -- Matches docs/01-product-documentation/safety-doggy-product-specification.md §5.4/§5.5.
 

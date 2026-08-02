@@ -1,4 +1,4 @@
-# Safety Doggy — Propositions d'amélioration (post-MVP)
+# SafetyPet — Propositions d'amélioration (post-MVP)
 
 **Objet :** analyse et priorisation des 11 idées soumises par les porteurs de projet, avec pour chacune une proposition affinée, une note d'intérêt, un niveau de difficulté, et une recommandation de séquencement.
 

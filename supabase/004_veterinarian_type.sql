@@ -1,4 +1,4 @@
--- Safety Doggy — add "veterinarian" report type
+-- SafetyPet — add "veterinarian" report type
 -- Run this in the Supabase SQL editor after schema.sql, 002_flag_threshold.sql
 -- and 003_pet_friendly_venue_type.sql.
 --

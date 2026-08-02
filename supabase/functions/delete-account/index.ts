@@ -1,4 +1,4 @@
-// Safety Doggy — delete-account Edge Function
+// SafetyPet — delete-account Edge Function
 //
 // Deletes the calling user's Supabase Auth credentials. This is the piece
 // account deletion was missing: the client (mobile/src/lib/profile.ts)

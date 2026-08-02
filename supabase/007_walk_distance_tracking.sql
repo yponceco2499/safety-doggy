@@ -1,4 +1,4 @@
--- Safety Doggy — walk distance tracking, full version (feature #5, full)
+-- SafetyPet — walk distance tracking, full version (feature #5, full)
 -- Run this in the Supabase SQL editor after 006_pets_and_walks.sql.
 --
 -- Builds on the light start/stop walk sessions from 006 by adding an

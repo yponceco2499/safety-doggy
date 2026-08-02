@@ -1,4 +1,4 @@
--- Safety Doggy — pets profile & lightweight walk stats (features #2 + #5)
+-- SafetyPet — pets profile & lightweight walk stats (features #2 + #5)
 -- Run this in the Supabase SQL editor after 005_report_photo.sql.
 --
 -- Per docs/05-future-improvements/feature-proposals.md:
