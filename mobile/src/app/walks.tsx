@@ -8,6 +8,7 @@ import { useAuth } from '@/lib/auth-context';
 import { fetchMyPets, type Pet } from '@/lib/pets';
 import { fetchProfile, grantWalkTrackingConsent, type Profile } from '@/lib/profile';
 import {
+  clearWalkTrackingState,
   isWalkTrackingActive,
   isWalkTrackingAvailable,
   requestWalkTrackingPermissions,
@@ -50,7 +51,20 @@ export default function WalksScreen() {
       fetchProfile(session.user.id),
       isWalkTrackingActive(),
       isWalkTrackingAvailable(),
-    ]).then(([petsData, walksData, active, profileData, trackingActive, available]) => {
+    ]).then(async ([petsData, walksData, active, profileData, trackingActive, available]) => {
+      // Self-healing: GPS tracking running with no matching active walk row
+      // can only mean a previous session started tracking but never
+      // finished creating (or later lost) its walk row. There's no walk to
+      // attach this distance to, and no UI path to reach it otherwise (the
+      // stop button only shows for an active walk) — so stop it and drop
+      // the orphaned distance rather than let it run forever in the
+      // background.
+      if (trackingActive && !active) {
+        await stopWalkTracking();
+        await clearWalkTrackingState();
+        trackingActive = false;
+      }
+
       setPets(petsData);
       setWalks(walksData);
       setActiveWalk(active);
@@ -88,8 +102,13 @@ export default function WalksScreen() {
         setActiveWalk(walk);
         return;
       }
-      await startWalkTracking();
+      // Create the walk row first: if this fails, we simply never start
+      // tracking. Starting tracking first and having this insert fail
+      // afterwards would leave GPS tracking running in the background with
+      // no walk row to attach it to — and no "Terminer la sortie" button to
+      // stop it from, since that button only appears for an active walk.
       const walk = await startWalk(session!.user.id, selectedPetId);
+      await startWalkTracking();
       setActiveWalk(walk);
       setTracking(true);
     } finally {
@@ -137,6 +156,7 @@ export default function WalksScreen() {
       if (tracking) {
         const km = await stopWalkTracking();
         await endWalk(activeWalk.id, km);
+        await clearWalkTrackingState();
         setTracking(false);
       } else {
         await endWalk(activeWalk.id);

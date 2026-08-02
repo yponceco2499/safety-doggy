@@ -21,8 +21,8 @@ export async function updateNickname(userId: string, nickname: string): Promise<
 }
 
 // Records explicit, informed consent to background GPS tracking during a
-// walk session (see walk-tracking-consent.tsx for the explanation shown
-// before this is called). Required before any tracked walk can start.
+// walk session (see the consent modal in app/walks.tsx for the explanation
+// shown before this is called). Required before any tracked walk can start.
 export async function grantWalkTrackingConsent(userId: string): Promise<void> {
   const { error } = await supabase
     .from('profiles')

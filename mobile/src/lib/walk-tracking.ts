@@ -77,13 +77,24 @@ export async function startWalkTracking(): Promise<void> {
 }
 
 // Stops the background task and returns the total distance walked, in km.
+// Deliberately does NOT clear the AsyncStorage accumulator — the caller is
+// about to persist this distance to the walk's row, and that call can fail
+// (network). Clearing here first would lose the measured distance forever
+// with no way to retry. Call clearWalkTrackingState() once the distance has
+// actually been saved.
 export async function stopWalkTracking(): Promise<number> {
   if (await isWalkTrackingActive()) {
     await Location.stopLocationUpdatesAsync(TASK_NAME);
   }
   const totalMeters = Number((await AsyncStorage.getItem(STORAGE_KEY_DISTANCE)) ?? '0');
-  await AsyncStorage.multiRemove([STORAGE_KEY_DISTANCE, STORAGE_KEY_LAST_POINT]);
   return totalMeters / 1000;
+}
+
+// Resets the distance accumulator — call once a tracked walk's distance has
+// been durably saved (or discarded on purpose, e.g. recovering from an
+// orphaned tracking session with no matching walk row).
+export async function clearWalkTrackingState(): Promise<void> {
+  await AsyncStorage.multiRemove([STORAGE_KEY_DISTANCE, STORAGE_KEY_LAST_POINT]);
 }
 
 export async function isWalkTrackingActive(): Promise<boolean> {
