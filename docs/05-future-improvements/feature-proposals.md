@@ -236,6 +236,32 @@ Un système d'amis implique presque toujours des identités visibles et, souvent
 
 ---
 
+### 19. Risque ours/loup
+**Idée initiale :** ajouter un événement "risque d'ours/loup".
+
+**Proposition affinée :** même mécanique que les autres types de danger — un nouveau type de signalement "hazard", signalé par la communauté.
+
+**Intérêt : 3/5**
+**Difficulté : 1/5** — Une ligne dans `report-types.ts` + une migration d'une ligne, même patron que #4/#16.
+**Point d'attention non tranché :** ni ours ni loup ne sont présents à l'état sauvage dans la zone de lancement MVP (Le Havre et environs, Normandie) — les populations de loups en France se trouvent dans les Alpes/Pyrénées/Vosges, pas en Normandie. Pertinent dès aujourd'hui si l'app vise déjà un usage hors zone MVP (randonnée en montagne par ex.), ou à activer plus tard avec #1 (choix de ville) si l'app s'étend vers des zones concernées. À confirmer si c'est bien l'intention, sinon le type restera présent dans la liste mais rarement utilisé pour le lancement Le Havre.
+
+---
+
+### 20. Répertoire des refuges (SPA) avec fiche détaillée
+**Idée initiale :** créer un répertoire SPA — cliquer dessus affiche les infos de base (adresse, téléphone, site web).
+
+**Proposition affinée :** ceci **révise #16** plutôt que de le dupliquer. #16 proposait un simple pin communautaire (même mécanique que #8/#9, sans annuaire séparé) ; cette demande est explicitement un **vrai annuaire** avec une fiche structurée (adresse, téléphone, site web) au clic — plus proche d'un mini-CRM de lieux que d'un signalement communautaire classique.
+
+Deux approches possibles :
+- **(a) Fiche enrichie sur le type de signalement existant :** ajouter des champs optionnels (adresse texte, téléphone, site web) à `reports` (ou une table séparée `venue_details` liée par `report_id`), remplis par le créateur du signalement à la création. Reste communautaire, pas de vérification/maintenance par vous.
+- **(b) Vrai annuaire géré par vous :** une table à part (`shelters` ou générique `directory_entries`) que vous seuls alimentez/maintenez (cohérent avec le principe déjà appliqué à `report_type_settings` pour #11 : contenu de référence modifiable par un admin, pas par les utilisateurs). Plus fiable (pas de fausses infos), mais demande un vrai travail de maintenance de données dans la durée — le risque explicitement écarté pour #8/#9 initialement.
+
+**Intérêt : 4/5** — Information à forte valeur pratique (contacter un refuge en urgence).
+**Difficulté : 2/5** (option a) **à 3/5** (option b) — l'option (a) réutilise l'infrastructure de signalement existante ; l'option (b) nécessite un nouvel écran d'administration, sur le modèle de `/admin-durations`.
+**Recommandation : trancher entre (a) et (b) avant de construire — la différence de charge de maintenance à long terme est significative.**
+
+---
+
 ## Recommandation de séquencement global
 
 1. **Maintenant / prochain sprint** — #4, #8, #6a : gains rapides, zéro conflit, renforcent le cœur de l'app.
