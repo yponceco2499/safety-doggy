@@ -166,6 +166,76 @@ Un système d'amis implique presque toujours des identités visibles et, souvent
 
 ---
 
+## Nouvelles idées (ajoutées le 2026-07-28)
+
+### 12. Vérifier que les signalements se propagent bien en temps réel pour tous
+**Ce n'est pas une proposition de feature — c'est une vérification à faire.** Le mécanisme existe déjà (Supabase Realtime, voir §4.1) ; il s'agit de confirmer par un test manuel multi-appareils qu'un signalement créé sur un téléphone apparaît bien quasi instantanément sur un autre, sans qu'il faille recharger l'app.
+
+**Recommandation : à tester manuellement (deux téléphones ou un téléphone + le simulateur web), pas à développer.**
+
+---
+
+### 13. Demander au créateur si son signalement est toujours valable
+**Idée initiale :** demander à un utilisateur si l'alerte est toujours viable/présente.
+
+**Proposition affinée :** en complément du "signaler comme incorrect" (réactif, côté des autres utilisateurs, déjà en prod), une relance proactive envoyée **au créateur** d'un signalement encore actif après un certain délai ("Votre signalement 'Chasse en cours' est-il toujours d'actualité ?"), avec un bouton "Oui, toujours là" (prolonge) / "Non, c'est terminé" (supprime). Réduit le nombre de signalements obsolètes qui traînent jusqu'à expiration de leur durée fixe.
+
+**Intérêt : 3/5** — Améliore la fraîcheur des données, complète le système de fiabilité existant.
+**Difficulté : 3/5** — Nécessite un système de notifications (aucune infrastructure de notification n'existe encore dans l'app, voir #18 ci-dessous qui a le même prérequis) + une logique de relance planifiée (Edge Function + cron, sur le modèle de la purge des signalements expirés déjà en place).
+
+---
+
+### 14. Personnaliser le marqueur de position sur la carte
+**Idée initiale :** modifier le curseur / pouvoir le personnaliser.
+
+**Proposition affinée :** compris comme le marqueur représentant la position de l'utilisateur lui-même sur la carte (pas les icônes de signalement, déjà personnalisées par type). Permettre de choisir parmi quelques icônes (silhouette de chien, couleur) dans le profil.
+
+**Intérêt : 2/5** — Cosmétique, pas de valeur fonctionnelle directe.
+**Difficulté : 2/5** — Un champ de préférence + un sélecteur d'icônes, sur le même patron que le profil "Mes chiens".
+
+---
+
+### 15. Connexion à Strava
+**Idée initiale :** voir si l'app peut se connecter à Strava.
+
+**Réponse technique :** oui, faisable, gratuit (API Strava standard, pas de coût récurrent). Deux directions possibles :
+- **Import** (raisonnable) : récupérer la distance/durée d'une activité Strava pour créer une "sortie" Safety Doggy — cohérent avec le choix déjà fait de ne jamais stocker de trajet GPS détaillé (voir #5, §4.5a).
+- **Export avec carte du trajet** (en tension avec un choix déjà fait) : une activité Strava affiche normalement le tracé GPS complet, qu'on a délibérément choisi de ne jamais enregistrer pour Safety Doggy (minimisation des données). Sans trajet, l'export vers Strava serait une activité "dégradée" (distance/durée seules, pas de carte).
+
+**Intérêt : 2/5** — Fonctionnalité de niche, utile seulement aux utilisateurs déjà sur Strava.
+**Difficulté : 3/5** — Compte développeur Strava + flux OAuth (même complexité que Google Sign-In, voir `expo-auth-session`).
+**Recommandation : à reconsidérer si la demande utilisateur se confirme après le lancement — pas prioritaire pour le MVP.**
+
+---
+
+### 16. Indiquer les refuges
+**Proposition affinée :** même mécanique que #8/#9 (lieu pet-friendly, vétérinaire) — un nouveau type de signalement positif "Refuge animalier", signalé par la communauté, durée permanente.
+
+**Intérêt : 3/5**
+**Difficulté : 1/5** — Une ligne dans `report-types.ts` + une migration d'une ligne, patron déjà éprouvé trois fois cette session.
+
+---
+
+### 17. Urgences vétérinaires
+**Proposition affinée :** ambiguïté à lever — soit (a) un sous-type du type "Vétérinaire" existant pour signaler spécifiquement une clinique ouverte 24h/24, soit (b) un contenu statique (numéros d'urgence nationaux/régionaux) ajouté à la FAQ. L'option (a) suit le même mécanisme que #16 ; l'option (b) est un ajout de texte, sans code.
+
+**Intérêt : 3/5**
+**Difficulté : 1/5** dans les deux cas.
+**Recommandation : clarifier laquelle des deux interprétations est visée avant de construire.**
+
+---
+
+### 18. Fiche du chien enrichie : identité, dates de vaccin, rappel automatique
+**Idée initiale :** carte d'identité du chien + dates de vaccin + notification de rappel 1 mois avant.
+
+**Proposition affinée :** étend le profil "Mes chiens" existant (nom, race) avec des champs identité (date de naissance, puce/tatouage — optionnels) et une ou plusieurs dates de vaccin. La partie notable est le **rappel automatique** : ça introduit la toute première notification programmée de l'app — aucune infrastructure de ce type n'existe encore (les notifications de proximité sont d'ailleurs déjà cataloguées comme fonctionnalité V2 dans la spec, §9.2, précisément pour cette raison).
+
+**Intérêt : 4/5** — Valeur pratique concrète, renforce l'usage régulier de l'app.
+**Difficulté : 3/5** — Champs supplémentaires sur `pets` (facile) + notifications locales programmées via `expo-notifications` (pas besoin de serveur push : une notification locale programmée sur l'appareil au moment de l'ajout d'une date de vaccin suffit, contrairement aux notifications de proximité qui elles nécessiteraient un vrai serveur).
+**Recommandation : bon candidat pour la suite — value/effort favorable, et pose les bases (notifications locales) utiles pour de futures fonctionnalités.**
+
+---
+
 ## Recommandation de séquencement global
 
 1. **Maintenant / prochain sprint** — #4, #8, #6a : gains rapides, zéro conflit, renforcent le cœur de l'app.
