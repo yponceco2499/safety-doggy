@@ -1,4 +1,4 @@
-# Safety Doggy — Propositions d'amélioration (post-MVP)
+# SafetyPet — Propositions d'amélioration (post-MVP)
 
 **Objet :** analyse et priorisation des 11 idées soumises par les porteurs de projet, avec pour chacune une proposition affinée, une note d'intérêt, un niveau de difficulté, et une recommandation de séquencement.
 
@@ -199,8 +199,8 @@ Un système d'amis implique presque toujours des identités visibles et, souvent
 **Idée initiale :** voir si l'app peut se connecter à Strava.
 
 **Réponse technique :** oui, faisable, gratuit (API Strava standard, pas de coût récurrent). Deux directions possibles :
-- **Import** (raisonnable) : récupérer la distance/durée d'une activité Strava pour créer une "sortie" Safety Doggy — cohérent avec le choix déjà fait de ne jamais stocker de trajet GPS détaillé (voir #5, §4.5a).
-- **Export avec carte du trajet** (en tension avec un choix déjà fait) : une activité Strava affiche normalement le tracé GPS complet, qu'on a délibérément choisi de ne jamais enregistrer pour Safety Doggy (minimisation des données). Sans trajet, l'export vers Strava serait une activité "dégradée" (distance/durée seules, pas de carte).
+- **Import** (raisonnable) : récupérer la distance/durée d'une activité Strava pour créer une "sortie" SafetyPet — cohérent avec le choix déjà fait de ne jamais stocker de trajet GPS détaillé (voir #5, §4.5a).
+- **Export avec carte du trajet** (en tension avec un choix déjà fait) : une activité Strava affiche normalement le tracé GPS complet, qu'on a délibérément choisi de ne jamais enregistrer pour SafetyPet (minimisation des données). Sans trajet, l'export vers Strava serait une activité "dégradée" (distance/durée seules, pas de carte).
 
 **Intérêt : 2/5** — Fonctionnalité de niche, utile seulement aux utilisateurs déjà sur Strava.
 **Difficulté : 3/5** — Compte développeur Strava + flux OAuth (même complexité que Google Sign-In, voir `expo-auth-session`).
