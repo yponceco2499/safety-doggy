@@ -7,6 +7,7 @@ export interface Profile {
   created_at: string;
   deleted_at: string | null;
   walk_tracking_consent_at: string | null;
+  is_admin: boolean;
 }
 
 export async function fetchProfile(userId: string): Promise<Profile> {

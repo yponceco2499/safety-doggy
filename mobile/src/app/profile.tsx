@@ -134,6 +134,12 @@ export default function ProfileScreen() {
         <Text style={styles.listRowLabel}>Politique de confidentialité</Text>
         <Text style={styles.chevron}>›</Text>
       </Pressable>
+      {profile?.is_admin && (
+        <Pressable style={styles.listRow} onPress={() => router.push('/admin-durations')}>
+          <Text style={styles.listRowLabel}>⚙️ Gestion des durées</Text>
+          <Text style={styles.chevron}>›</Text>
+        </Pressable>
+      )}
 
       <Pressable
         style={styles.secondaryBtnFull}

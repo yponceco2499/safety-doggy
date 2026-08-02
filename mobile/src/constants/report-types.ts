@@ -1,3 +1,5 @@
+import { getDurationOverride } from '@/lib/report-type-settings';
+
 export type ReportCategory = 'hazard' | 'positive';
 
 export type ReportTypeId =
@@ -41,7 +43,14 @@ export const REPORT_TYPES: ReportTypeConfig[] = [
 export function getReportType(id: ReportTypeId): ReportTypeConfig {
   const found = REPORT_TYPES.find((t) => t.id === id);
   if (!found) throw new Error(`Unknown report type: ${id}`);
-  return found;
+  // Admin-adjustable duration override (see lib/report-type-settings.ts and
+  // supabase/009_admin_report_durations.sql) — applied here so every
+  // existing caller of getReportType() picks it up automatically, with no
+  // other call site needing to know this exists. Safe against import
+  // cycles: report-type-settings.ts only imports the ReportTypeId *type*
+  // from this file, which TypeScript erases before bundling.
+  const override = getDurationOverride(id);
+  return override === undefined ? found : { ...found, durationHours: override };
 }
 
 // Le Havre, France — MVP launch area default map center.
