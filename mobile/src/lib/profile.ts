@@ -8,6 +8,7 @@ export interface Profile {
   deleted_at: string | null;
   walk_tracking_consent_at: string | null;
   is_admin: boolean;
+  marker_icon: string | null;
 }
 
 export async function fetchProfile(userId: string): Promise<Profile> {
@@ -18,6 +19,13 @@ export async function fetchProfile(userId: string): Promise<Profile> {
 
 export async function updateNickname(userId: string, nickname: string): Promise<void> {
   const { error } = await supabase.from('profiles').update({ nickname }).eq('id', userId);
+  if (error) throw error;
+}
+
+// null resets to the default native "blue dot" (react-native-maps'
+// showsUserLocation) — see the marker choices in app/profile.tsx.
+export async function updateMarkerIcon(userId: string, markerIcon: string | null): Promise<void> {
+  const { error } = await supabase.from('profiles').update({ marker_icon: markerIcon }).eq('id', userId);
   if (error) throw error;
 }
 
