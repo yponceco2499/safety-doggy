@@ -5,7 +5,10 @@ import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Text, TextIn
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/lib/auth-context';
-import { createPet, deletePet, fetchMyPets, type Pet } from '@/lib/pets';
+import { createPet, deletePet, fetchMyPets, updatePetVaccineReminder, type Pet } from '@/lib/pets';
+import { cancelVaccineReminder, scheduleVaccineReminder } from '@/lib/pet-reminders';
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export default function PetsScreen() {
   const { session } = useAuth();
@@ -13,6 +16,9 @@ export default function PetsScreen() {
   const [loaded, setLoaded] = useState(false);
   const [name, setName] = useState('');
   const [breed, setBreed] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [microchipId, setMicrochipId] = useState('');
+  const [nextVaccineDate, setNextVaccineDate] = useState('');
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(() => {
@@ -31,11 +37,35 @@ export default function PetsScreen() {
 
   const handleAdd = async () => {
     if (!session?.user || !name.trim()) return;
+    if (birthDate.trim() && !DATE_RE.test(birthDate.trim())) return;
+    if (nextVaccineDate.trim() && !DATE_RE.test(nextVaccineDate.trim())) return;
+
     setBusy(true);
     try {
-      await createPet(session.user.id, name.trim(), breed.trim());
+      const pet = await createPet(session.user.id, {
+        name: name.trim(),
+        breed: breed.trim(),
+        birthDate: birthDate.trim(),
+        microchipId: microchipId.trim(),
+        nextVaccineDate: nextVaccineDate.trim(),
+      });
+
+      if (pet.next_vaccine_date) {
+        // Reminder failing to schedule (permission declined, etc.) must
+        // never block the pet itself from being saved.
+        try {
+          const notificationId = await scheduleVaccineReminder(pet.name, new Date(pet.next_vaccine_date));
+          if (notificationId) await updatePetVaccineReminder(pet.id, notificationId);
+        } catch {
+          // Ignored — the pet is already saved without a reminder.
+        }
+      }
+
       setName('');
       setBreed('');
+      setBirthDate('');
+      setMicrochipId('');
+      setNextVaccineDate('');
       load();
     } finally {
       setBusy(false);
@@ -49,6 +79,9 @@ export default function PetsScreen() {
         text: 'Retirer',
         style: 'destructive',
         onPress: async () => {
+          if (pet.vaccine_reminder_notification_id) {
+            await cancelVaccineReminder(pet.vaccine_reminder_notification_id);
+          }
           await deletePet(pet.id);
           load();
         },
@@ -70,19 +103,33 @@ export default function PetsScreen() {
       </Text>
 
       <View style={styles.form}>
+        <TextInput style={styles.input} placeholder="Nom du chien" value={name} onChangeText={setName} />
+        <TextInput style={styles.input} placeholder="Race (optionnel)" value={breed} onChangeText={setBreed} />
         <TextInput
           style={styles.input}
-          placeholder="Nom du chien"
-          value={name}
-          onChangeText={setName}
+          placeholder="Date de naissance AAAA-MM-JJ (optionnel)"
+          value={birthDate}
+          onChangeText={setBirthDate}
         />
         <TextInput
           style={styles.input}
-          placeholder="Race (optionnel)"
-          value={breed}
-          onChangeText={setBreed}
+          placeholder="N° puce / tatouage (optionnel)"
+          value={microchipId}
+          onChangeText={setMicrochipId}
         />
-        <Pressable style={[styles.addButton, (!name.trim() || busy) && styles.addButtonDisabled]} onPress={handleAdd} disabled={!name.trim() || busy}>
+        <TextInput
+          style={styles.input}
+          placeholder="Prochain vaccin AAAA-MM-JJ (optionnel)"
+          value={nextVaccineDate}
+          onChangeText={setNextVaccineDate}
+        />
+        <Text style={styles.reminderHint}>
+          📅 Un rappel s'affiche automatiquement 1 mois avant la date de vaccin renseignée.
+        </Text>
+        <Pressable
+          style={[styles.addButton, (!name.trim() || busy) && styles.addButtonDisabled]}
+          onPress={handleAdd}
+          disabled={!name.trim() || busy}>
           {busy ? <ActivityIndicator color="white" /> : <Text style={styles.addButtonLabel}>Ajouter</Text>}
         </Pressable>
       </View>
@@ -98,6 +145,11 @@ export default function PetsScreen() {
               <View style={styles.rowBody}>
                 <Text style={styles.rowName}>🐾 {item.name}</Text>
                 {item.breed && <Text style={styles.rowBreed}>{item.breed}</Text>}
+                {item.birth_date && <Text style={styles.rowMeta}>Né(e) le {item.birth_date}</Text>}
+                {item.microchip_id && <Text style={styles.rowMeta}>Puce : {item.microchip_id}</Text>}
+                {item.next_vaccine_date && (
+                  <Text style={styles.rowMeta}>💉 Prochain vaccin : {item.next_vaccine_date}</Text>
+                )}
               </View>
               <Pressable onPress={() => handleDelete(item)}>
                 <Text style={styles.removeLabel}>Retirer</Text>
@@ -118,13 +170,15 @@ const styles = StyleSheet.create({
   hint: { fontSize: 13, color: '#555', marginBottom: 12 },
   form: { gap: 8, marginBottom: 16 },
   input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 10, fontSize: 15 },
+  reminderHint: { fontSize: 12, color: '#777' },
   addButton: { backgroundColor: '#208AEF', borderRadius: 8, paddingVertical: 12, alignItems: 'center' },
   addButtonDisabled: { opacity: 0.5 },
   addButtonLabel: { color: 'white', fontWeight: '700' },
   empty: { textAlign: 'center', color: '#777', marginTop: 24 },
-  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#eee' },
-  rowBody: { flex: 1 },
+  row: { flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#eee' },
+  rowBody: { flex: 1, gap: 2 },
   rowName: { fontSize: 15, fontWeight: '600' },
   rowBreed: { fontSize: 12, color: '#777' },
+  rowMeta: { fontSize: 12, color: '#777' },
   removeLabel: { color: '#C62828', fontWeight: '600', fontSize: 13 },
 });

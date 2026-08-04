@@ -466,7 +466,7 @@ V2 (iOS port + advanced features) launches only when:
 
 #### 4.5a Walk Sessions & Distance Tracking (added 2026-07-25)
 
-**Dog profiles ("Mes chiens"):** optional, strictly personal (name + optional breed). Never attached to a report or shown publicly — the anonymity rule in §4.4 stays intact.
+**Dog profiles ("Mes chiens"):** optional, strictly personal (name + optional breed). Never attached to a report or shown publicly — the anonymity rule in §4.4 stays intact. *(Enriched 2026-07-28, feature #18: optional birth date, microchip/tattoo id, and a single upcoming vaccine date. Setting a vaccine date schedules a local device notification 30 days before — no push infrastructure, no server round-trip, see `lib/pet-reminders.ts`. Light version: one upcoming date per dog, not a full vaccination history.)*
 
 **Walk sessions:** explicit "Démarrer une sortie" / "Terminer la sortie" buttons record `started_at`/`ended_at` on a `walks` row, optionally linked to a dog. No location data by default — this alone powers a "number of walks" / "time spent walking" dashboard, grouped by dog, at essentially no privacy cost.
 
