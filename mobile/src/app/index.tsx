@@ -11,6 +11,7 @@ import { ReportDetailSheet } from '@/components/report-detail-sheet';
 import { DEFAULT_REGION, REPORT_TYPES, getReportType, type ReportTypeId } from '@/constants/report-types';
 import { useAuth } from '@/lib/auth-context';
 import { searchAddress, type GeocodingResult } from '@/lib/geocoding';
+import { fetchProfile, type Profile } from '@/lib/profile';
 import { fetchActiveReports, type Report } from '@/lib/reports';
 
 const AGE_FILTER_MS: Record<Exclude<AgeFilter, 'all'>, number> = {
@@ -43,6 +44,44 @@ export default function MapScreen() {
   const [searchResults, setSearchResults] = useState<GeocodingResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState(false);
+
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [customMarkerCoords, setCustomMarkerCoords] = useState<{ latitude: number; longitude: number } | null>(null);
+
+  useEffect(() => {
+    if (!session?.user) {
+      setProfile(null);
+      return;
+    }
+    fetchProfile(session.user.id)
+      .then(setProfile)
+      .catch(() => {});
+  }, [session?.user?.id]);
+
+  // Only watch live position when the user picked a custom marker (§4.1's
+  // default "blue dot" comes for free from showsUserLocation below and
+  // needs no watcher of our own).
+  useEffect(() => {
+    if (!profile?.marker_icon || !locationGranted) {
+      setCustomMarkerCoords(null);
+      return;
+    }
+    let subscription: Location.LocationSubscription | null = null;
+    let cancelled = false;
+    Location.watchPositionAsync({ accuracy: Location.Accuracy.Balanced, distanceInterval: 5 }, (loc) => {
+      setCustomMarkerCoords({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
+    }).then((sub) => {
+      if (cancelled) {
+        sub.remove();
+      } else {
+        subscription = sub;
+      }
+    });
+    return () => {
+      cancelled = true;
+      subscription?.remove();
+    };
+  }, [profile?.marker_icon, locationGranted]);
 
   const runSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -105,7 +144,16 @@ export default function MapScreen() {
 
   return (
     <View style={styles.container}>
-      <MapView ref={mapRef} style={StyleSheet.absoluteFill} initialRegion={region} showsUserLocation={locationGranted}>
+      <MapView
+        ref={mapRef}
+        style={StyleSheet.absoluteFill}
+        initialRegion={region}
+        showsUserLocation={locationGranted && !profile?.marker_icon}>
+        {profile?.marker_icon && customMarkerCoords && (
+          <Marker coordinate={customMarkerCoords} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges={false}>
+            <Text style={styles.customMarkerIcon}>{profile.marker_icon}</Text>
+          </Marker>
+        )}
         {visibleReports.map((report) => {
           const type = getReportType(report.type);
           return (
@@ -313,6 +361,9 @@ const styles = StyleSheet.create({
   },
   markerIcon: {
     fontSize: 16,
+  },
+  customMarkerIcon: {
+    fontSize: 30,
   },
   banner: {
     backgroundColor: '#1D3557',

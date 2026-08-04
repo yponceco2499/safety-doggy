@@ -6,8 +6,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { signOut } from '@/lib/auth';
 import { useAuth } from '@/lib/auth-context';
-import { deleteAccount, fetchProfile, updateNickname, type Profile } from '@/lib/profile';
+import { deleteAccount, fetchProfile, updateMarkerIcon, updateNickname, type Profile } from '@/lib/profile';
 import { fetchMyReports } from '@/lib/reports';
+
+const MARKER_OPTIONS: { value: string | null; label: string }[] = [
+  { value: null, label: '🔵 Défaut' },
+  { value: '🐾', label: '🐾' },
+  { value: '🐕', label: '🐕' },
+  { value: '⭐', label: '⭐' },
+  { value: '📍', label: '📍' },
+];
 
 export default function ProfileScreen() {
   const { session } = useAuth();
@@ -16,6 +24,7 @@ export default function ProfileScreen() {
   const [editingNickname, setEditingNickname] = useState(false);
   const [nicknameInput, setNicknameInput] = useState('');
   const [busy, setBusy] = useState(false);
+  const [savingMarker, setSavingMarker] = useState(false);
 
   const load = useCallback(async () => {
     if (!session?.user) return;
@@ -49,6 +58,17 @@ export default function ProfileScreen() {
       load();
     } finally {
       setBusy(false);
+    }
+  };
+
+  const handlePickMarker = async (icon: string | null) => {
+    if (!session?.user) return;
+    setSavingMarker(true);
+    try {
+      await updateMarkerIcon(session.user.id, icon);
+      setProfile((p) => (p ? { ...p, marker_icon: icon } : p));
+    } finally {
+      setSavingMarker(false);
     }
   };
 
@@ -119,6 +139,19 @@ export default function ProfileScreen() {
         </Text>
       )}
 
+      <Text style={styles.sectionLabel}>Marqueur de position sur la carte</Text>
+      <View style={styles.markerRow}>
+        {MARKER_OPTIONS.map((opt) => (
+          <Pressable
+            key={opt.label}
+            style={[styles.markerChip, profile?.marker_icon === opt.value && styles.markerChipSelected]}
+            onPress={() => handlePickMarker(opt.value)}
+            disabled={savingMarker}>
+            <Text style={styles.markerChipLabel}>{opt.label}</Text>
+          </Pressable>
+        ))}
+      </View>
+
       <Pressable style={styles.listRow} onPress={() => router.push('/history')}>
         <Text style={styles.listRowLabel}>Mes signalements</Text>
         <Text style={styles.chevron}>›</Text>
@@ -183,6 +216,17 @@ const styles = StyleSheet.create({
   primaryBtn: { flex: 1, backgroundColor: '#208AEF', borderRadius: 8, paddingVertical: 10, alignItems: 'center' },
   primaryBtnLabel: { fontWeight: '700', color: 'white' },
   meta: { fontSize: 13, color: '#555' },
+  sectionLabel: { fontSize: 13, color: '#555', marginTop: 8 },
+  markerRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
+  markerChip: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  markerChipSelected: { borderColor: '#208AEF', backgroundColor: '#EAF4FF' },
+  markerChipLabel: { fontSize: 18 },
   listRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
