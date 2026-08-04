@@ -161,3 +161,17 @@ export async function flagReport(reportId: string): Promise<void> {
   const { error } = await supabase.rpc('flag_report', { p_report_id: reportId });
   if (error) throw error;
 }
+
+// Positive counterpart to flagReport() — any user can confirm a report is
+// still accurate (see supabase/010_confirm_report.sql). Purely
+// informational, no auto-deactivation threshold like flags has.
+export async function confirmReport(reportId: string): Promise<void> {
+  const { error } = await supabase.rpc('confirm_report', { p_report_id: reportId });
+  if (error) throw error;
+}
+
+export async function getConfirmationCount(reportId: string): Promise<number> {
+  const { data, error } = await supabase.rpc('get_confirmation_count', { p_report_id: reportId });
+  if (error) throw error;
+  return data ?? 0;
+}
