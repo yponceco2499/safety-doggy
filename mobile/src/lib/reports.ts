@@ -54,6 +54,22 @@ export function reportStatus(report: Report): ReportStatus {
   return 'active';
 }
 
+// Feature #13 (light version — in-app prompt, not a push notification: no
+// server/scheduling infrastructure needed). A report is worth asking its
+// creator to revalidate once it's past the halfway point of its own
+// lifespan — early enough to still be useful, without nagging right after
+// creation. Permanent reports (no expires_at) are never included: there's
+// no natural "halfway" point for something meant to stay indefinitely.
+export function needsRevalidation(report: Report): boolean {
+  if (!report.is_active || !report.expires_at) return false;
+  const start = new Date(report.created_at).getTime();
+  const end = new Date(report.expires_at).getTime();
+  const now = Date.now();
+  if (now >= end) return false;
+  const halfway = start + (end - start) / 2;
+  return now >= halfway;
+}
+
 // Full history for the current user, including expired/deleted reports —
 // unlike fetchActiveReports, not filtered by is_active/expires_at.
 export async function fetchMyReports(userId: string): Promise<Report[]> {
