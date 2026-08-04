@@ -262,6 +262,53 @@ Deux approches possibles :
 
 ---
 
+## Nouvelles idées (ajoutées le 2026-07-28, proposées par Claude)
+
+Idées identifiées en relisant le code et le doc actuels, classées ci-dessous par pertinence (valeur rapportée à l'effort) plutôt que par ordre de soumission.
+
+### 21. Confirmation positive par d'autres utilisateurs ("toujours là")
+**Proposition :** aujourd'hui, le seul signal communautaire sur un signalement est négatif ("signaler comme incorrect", §4.7). Ajouter son pendant positif : un bouton "Confirmer" ouvert à tout utilisateur (pas seulement au créateur, à la différence de #13) qui affiche ensuite "3 personnes confirment" sur la fiche détail. Renforce la confiance dans les signalements de longue durée (coin épillet 30 jours, chenilles 7 jours) sans attendre une relance automatique.
+
+**Proposition technique :** même patron que `flags`/`flag_report()` (§4.7, `supabase/002_flag_threshold.sql`) — soit une table séparée `confirmations`, soit `flags` étendue avec une colonne `kind` ('incorrect' | 'confirm') et une contrainte d'unicité par (report_id, flagged_by, kind). Contrairement aux flags, aucune action automatique (pas de seuil de désactivation) : juste un compteur affiché.
+
+**Intérêt : 4/5** — Renforce la confiance dans les données pour un coût de développement faible, complète un mécanisme déjà à moitié construit.
+**Difficulté : 2/5** — Réutilise directement l'infrastructure et les patrons RLS de `flags`.
+
+---
+
+### 22. Filtre par ancienneté sur la carte
+**Proposition :** en plus du filtre par catégorie/type (déjà en prod), ajouter un filtre "signalements des dernières 24h / 7 jours / tous" dans `FilterSheet`. Utile car certains types durent jusqu'à 30 jours (coin épillet) et peuvent s'accumuler visuellement sur la carte au fil du temps.
+
+**Intérêt : 3/5**
+**Difficulté : 1/5** — Aucun changement de base de données, un filtre supplémentaire côté client sur des données déjà chargées (`created_at`).
+
+---
+
+### 23. Compteur personnel sur le profil
+**Proposition :** afficher "X signalements créés depuis votre inscription" sur l'écran Profil — reconnaissance légère de la contribution, aucune nouvelle donnée à stocker (déjà calculable depuis `fetchMyReports`, sur le modèle du dashboard par chien déjà construit pour #5).
+
+**Intérêt : 2/5** — Agréable, pas essentiel.
+**Difficulté : 1/5** — Un calcul sur des données déjà chargées, aucune migration.
+
+---
+
+### 24. Recherche d'adresse sur la carte
+**Proposition :** une barre de recherche pour se repositionner directement sur la carte (au lieu de la faire glisser à la main), via un service de géocodage gratuit — Nominatim (OpenStreetMap), cohérent avec le choix déjà fait pour les tuiles de carte (§4.1). Utile même à l'intérieur de la zone du Havre, indispensable si #1 (choix de ville) se concrétise un jour.
+
+**Intérêt : 4/5** — Vraie amélioration d'usage, surtout utile en préparation d'une sortie.
+**Difficulté : 3/5** — Intégration d'API externe + UI d'autocomplétion. Point d'attention : la politique d'usage de Nominatim limite à 1 requête/seconde et exige un User-Agent identifiant l'app — largement suffisant pour ce volume d'usage, mais à respecter.
+
+---
+
+### 25. Raccourci Android vers "Nouveau signalement"
+**Proposition :** un raccourci d'app (appui long sur l'icône SafetyPet) menant directement à l'écran de création de signalement, pour aller plus vite sur le terrain.
+
+**Intérêt : 2/5**
+**Difficulté : 2/5** — Nécessite `expo-quick-actions` ou équivalent (permissions/config natives) — **comme le suivi GPS, non testable sous Expo Go, nécessite un build de développement.**
+**Recommandation : à regrouper avec la prochaine feature qui nécessite de toute façon un build de développement, plutôt que de le faire seul.**
+
+---
+
 ## Recommandation de séquencement global
 
 1. **Maintenant / prochain sprint** — #4, #8, #6a : gains rapides, zéro conflit, renforcent le cœur de l'app.
