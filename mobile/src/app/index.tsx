@@ -6,11 +6,21 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, type Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { FilterSheet } from '@/components/filter-sheet';
+import { FilterSheet, type AgeFilter } from '@/components/filter-sheet';
 import { ReportDetailSheet } from '@/components/report-detail-sheet';
 import { DEFAULT_REGION, REPORT_TYPES, getReportType, type ReportTypeId } from '@/constants/report-types';
 import { useAuth } from '@/lib/auth-context';
 import { fetchActiveReports, type Report } from '@/lib/reports';
+
+const AGE_FILTER_MS: Record<Exclude<AgeFilter, 'all'>, number> = {
+  '24h': 24 * 3600 * 1000,
+  '7d': 7 * 24 * 3600 * 1000,
+};
+
+function withinAge(report: Report, ageFilter: AgeFilter): boolean {
+  if (ageFilter === 'all') return true;
+  return Date.now() - new Date(report.created_at).getTime() < AGE_FILTER_MS[ageFilter];
+}
 
 export default function MapScreen() {
   const { session } = useAuth();
@@ -22,8 +32,9 @@ export default function MapScreen() {
   const [activeFilters, setActiveFilters] = useState<Set<ReportTypeId>>(
     () => new Set(REPORT_TYPES.map((t) => t.id)),
   );
+  const [ageFilter, setAgeFilter] = useState<AgeFilter>('all');
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
-  const visibleReports = reports.filter((r) => activeFilters.has(r.type));
+  const visibleReports = reports.filter((r) => activeFilters.has(r.type) && withinAge(r, ageFilter));
 
   useEffect(() => {
     (async () => {
@@ -139,6 +150,8 @@ export default function MapScreen() {
         <FilterSheet
           activeFilters={activeFilters}
           onChange={setActiveFilters}
+          ageFilter={ageFilter}
+          onAgeFilterChange={setAgeFilter}
           onClose={() => setFilterSheetOpen(false)}
         />
       )}

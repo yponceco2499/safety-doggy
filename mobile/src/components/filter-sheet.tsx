@@ -2,13 +2,23 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 
 import { REPORT_TYPES, type ReportTypeId } from '@/constants/report-types';
 
+export type AgeFilter = '24h' | '7d' | 'all';
+
+const AGE_OPTIONS: { value: AgeFilter; label: string }[] = [
+  { value: '24h', label: 'Dernières 24h' },
+  { value: '7d', label: '7 derniers jours' },
+  { value: 'all', label: 'Tous' },
+];
+
 interface Props {
   activeFilters: Set<ReportTypeId>;
   onChange: (next: Set<ReportTypeId>) => void;
+  ageFilter: AgeFilter;
+  onAgeFilterChange: (next: AgeFilter) => void;
   onClose: () => void;
 }
 
-export function FilterSheet({ activeFilters, onChange, onClose }: Props) {
+export function FilterSheet({ activeFilters, onChange, ageFilter, onAgeFilterChange, onClose }: Props) {
   const toggle = (id: ReportTypeId) => {
     const next = new Set(activeFilters);
     if (next.has(id)) next.delete(id);
@@ -25,6 +35,20 @@ export function FilterSheet({ activeFilters, onChange, onClose }: Props) {
       <View style={styles.sheet}>
         <View style={styles.handle} />
         <Text style={styles.title}>Filtrer les signalements</Text>
+
+        <Text style={styles.groupLabel}>Ancienneté</Text>
+        <View style={styles.ageRow}>
+          {AGE_OPTIONS.map((opt) => (
+            <Pressable
+              key={opt.value}
+              style={[styles.ageChip, ageFilter === opt.value && styles.ageChipSelected]}
+              onPress={() => onAgeFilterChange(opt.value)}>
+              <Text style={[styles.ageChipLabel, ageFilter === opt.value && styles.ageChipLabelSelected]}>
+                {opt.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
 
         <ScrollView>
           <Text style={styles.groupLabel}>⚠ Dangers</Text>
@@ -82,6 +106,11 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 18, fontWeight: '700', marginBottom: 8 },
   groupLabel: { fontSize: 13, color: '#555', marginTop: 12, marginBottom: 4 },
+  ageRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 },
+  ageChip: { borderWidth: 1, borderColor: '#ccc', borderRadius: 20, paddingVertical: 6, paddingHorizontal: 14 },
+  ageChipSelected: { borderColor: '#208AEF', backgroundColor: '#EAF4FF' },
+  ageChipLabel: { fontSize: 13, color: '#333' },
+  ageChipLabelSelected: { color: '#208AEF', fontWeight: '700' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8 },
   rowIcon: { fontSize: 18, width: 24 },
   rowLabel: { flex: 1, fontSize: 15 },
