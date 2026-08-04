@@ -1,4 +1,4 @@
-# Safety Doggy — Propositions d'amélioration (post-MVP)
+# SafetyPet — Propositions d'amélioration (post-MVP)
 
 **Objet :** analyse et priorisation des 11 idées soumises par les porteurs de projet, avec pour chacune une proposition affinée, une note d'intérêt, un niveau de difficulté, et une recommandation de séquencement.
 
@@ -163,6 +163,102 @@ Un système d'amis implique presque toujours des identités visibles et, souvent
 **Intérêt : 2/5** — Demande réelle des utilisateurs, mais en tension frontale avec le positionnement "sécurité" de l'app.
 **Difficulté : 4/5** — Nouveau modèle de données (demandes, statuts accepté/bloqué), notifications, réglages de confidentialité, modération des abus (harcèlement via le système lui-même).
 **Recommandation : ne pas trancher seul — c'est une décision stratégique à prendre consciemment avec vous, pas une feature à ajouter au fil de l'eau.**
+
+---
+
+## Nouvelles idées (ajoutées le 2026-07-28)
+
+### 12. Vérifier que les signalements se propagent bien en temps réel pour tous
+**Ce n'est pas une proposition de feature — c'est une vérification à faire.** Le mécanisme existe déjà (Supabase Realtime, voir §4.1) ; il s'agit de confirmer par un test manuel multi-appareils qu'un signalement créé sur un téléphone apparaît bien quasi instantanément sur un autre, sans qu'il faille recharger l'app.
+
+**Recommandation : à tester manuellement (deux téléphones ou un téléphone + le simulateur web), pas à développer.**
+
+---
+
+### 13. Demander au créateur si son signalement est toujours valable
+**Idée initiale :** demander à un utilisateur si l'alerte est toujours viable/présente.
+
+**Proposition affinée :** en complément du "signaler comme incorrect" (réactif, côté des autres utilisateurs, déjà en prod), une relance proactive envoyée **au créateur** d'un signalement encore actif après un certain délai ("Votre signalement 'Chasse en cours' est-il toujours d'actualité ?"), avec un bouton "Oui, toujours là" (prolonge) / "Non, c'est terminé" (supprime). Réduit le nombre de signalements obsolètes qui traînent jusqu'à expiration de leur durée fixe.
+
+**Intérêt : 3/5** — Améliore la fraîcheur des données, complète le système de fiabilité existant.
+**Difficulté : 3/5** — Nécessite un système de notifications (aucune infrastructure de notification n'existe encore dans l'app, voir #18 ci-dessous qui a le même prérequis) + une logique de relance planifiée (Edge Function + cron, sur le modèle de la purge des signalements expirés déjà en place).
+
+---
+
+### 14. Personnaliser le marqueur de position sur la carte
+**Idée initiale :** modifier le curseur / pouvoir le personnaliser.
+
+**Proposition affinée :** compris comme le marqueur représentant la position de l'utilisateur lui-même sur la carte (pas les icônes de signalement, déjà personnalisées par type). Permettre de choisir parmi quelques icônes (silhouette de chien, couleur) dans le profil.
+
+**Intérêt : 2/5** — Cosmétique, pas de valeur fonctionnelle directe.
+**Difficulté : 2/5** — Un champ de préférence + un sélecteur d'icônes, sur le même patron que le profil "Mes chiens".
+
+---
+
+### 15. Connexion à Strava
+**Idée initiale :** voir si l'app peut se connecter à Strava.
+
+**Réponse technique :** oui, faisable, gratuit (API Strava standard, pas de coût récurrent). Deux directions possibles :
+- **Import** (raisonnable) : récupérer la distance/durée d'une activité Strava pour créer une "sortie" SafetyPet — cohérent avec le choix déjà fait de ne jamais stocker de trajet GPS détaillé (voir #5, §4.5a).
+- **Export avec carte du trajet** (en tension avec un choix déjà fait) : une activité Strava affiche normalement le tracé GPS complet, qu'on a délibérément choisi de ne jamais enregistrer pour SafetyPet (minimisation des données). Sans trajet, l'export vers Strava serait une activité "dégradée" (distance/durée seules, pas de carte).
+
+**Intérêt : 2/5** — Fonctionnalité de niche, utile seulement aux utilisateurs déjà sur Strava.
+**Difficulté : 3/5** — Compte développeur Strava + flux OAuth (même complexité que Google Sign-In, voir `expo-auth-session`).
+**Recommandation : à reconsidérer si la demande utilisateur se confirme après le lancement — pas prioritaire pour le MVP.**
+
+---
+
+### 16. Indiquer les refuges
+**Proposition affinée :** même mécanique que #8/#9 (lieu pet-friendly, vétérinaire) — un nouveau type de signalement positif "Refuge animalier", signalé par la communauté, durée permanente.
+
+**Intérêt : 3/5**
+**Difficulté : 1/5** — Une ligne dans `report-types.ts` + une migration d'une ligne, patron déjà éprouvé trois fois cette session.
+
+---
+
+### 17. Urgences vétérinaires
+**Proposition affinée :** ambiguïté à lever — soit (a) un sous-type du type "Vétérinaire" existant pour signaler spécifiquement une clinique ouverte 24h/24, soit (b) un contenu statique (numéros d'urgence nationaux/régionaux) ajouté à la FAQ. L'option (a) suit le même mécanisme que #16 ; l'option (b) est un ajout de texte, sans code.
+
+**Intérêt : 3/5**
+**Difficulté : 1/5** dans les deux cas.
+**Recommandation : clarifier laquelle des deux interprétations est visée avant de construire.**
+
+---
+
+### 18. Fiche du chien enrichie : identité, dates de vaccin, rappel automatique
+**Idée initiale :** carte d'identité du chien + dates de vaccin + notification de rappel 1 mois avant.
+
+**Proposition affinée :** étend le profil "Mes chiens" existant (nom, race) avec des champs identité (date de naissance, puce/tatouage — optionnels) et une ou plusieurs dates de vaccin. La partie notable est le **rappel automatique** : ça introduit la toute première notification programmée de l'app — aucune infrastructure de ce type n'existe encore (les notifications de proximité sont d'ailleurs déjà cataloguées comme fonctionnalité V2 dans la spec, §9.2, précisément pour cette raison).
+
+**Intérêt : 4/5** — Valeur pratique concrète, renforce l'usage régulier de l'app.
+**Difficulté : 3/5** — Champs supplémentaires sur `pets` (facile) + notifications locales programmées via `expo-notifications` (pas besoin de serveur push : une notification locale programmée sur l'appareil au moment de l'ajout d'une date de vaccin suffit, contrairement aux notifications de proximité qui elles nécessiteraient un vrai serveur).
+**Recommandation : bon candidat pour la suite — value/effort favorable, et pose les bases (notifications locales) utiles pour de futures fonctionnalités.**
+
+---
+
+### 19. Risque ours/loup
+**Idée initiale :** ajouter un événement "risque d'ours/loup".
+
+**Proposition affinée :** même mécanique que les autres types de danger — un nouveau type de signalement "hazard", signalé par la communauté.
+
+**Intérêt : 3/5**
+**Difficulté : 1/5** — Une ligne dans `report-types.ts` + une migration d'une ligne, même patron que #4/#16.
+**Point d'attention non tranché :** ni ours ni loup ne sont présents à l'état sauvage dans la zone de lancement MVP (Le Havre et environs, Normandie) — les populations de loups en France se trouvent dans les Alpes/Pyrénées/Vosges, pas en Normandie. Pertinent dès aujourd'hui si l'app vise déjà un usage hors zone MVP (randonnée en montagne par ex.), ou à activer plus tard avec #1 (choix de ville) si l'app s'étend vers des zones concernées. À confirmer si c'est bien l'intention, sinon le type restera présent dans la liste mais rarement utilisé pour le lancement Le Havre.
+
+---
+
+### 20. Répertoire des refuges (SPA) avec fiche détaillée
+**Idée initiale :** créer un répertoire SPA — cliquer dessus affiche les infos de base (adresse, téléphone, site web).
+
+**Proposition affinée :** ceci **révise #16** plutôt que de le dupliquer. #16 proposait un simple pin communautaire (même mécanique que #8/#9, sans annuaire séparé) ; cette demande est explicitement un **vrai annuaire** avec une fiche structurée (adresse, téléphone, site web) au clic — plus proche d'un mini-CRM de lieux que d'un signalement communautaire classique.
+
+Deux approches possibles :
+- **(a) Fiche enrichie sur le type de signalement existant :** ajouter des champs optionnels (adresse texte, téléphone, site web) à `reports` (ou une table séparée `venue_details` liée par `report_id`), remplis par le créateur du signalement à la création. Reste communautaire, pas de vérification/maintenance par vous.
+- **(b) Vrai annuaire géré par vous :** une table à part (`shelters` ou générique `directory_entries`) que vous seuls alimentez/maintenez (cohérent avec le principe déjà appliqué à `report_type_settings` pour #11 : contenu de référence modifiable par un admin, pas par les utilisateurs). Plus fiable (pas de fausses infos), mais demande un vrai travail de maintenance de données dans la durée — le risque explicitement écarté pour #8/#9 initialement.
+
+**Intérêt : 4/5** — Information à forte valeur pratique (contacter un refuge en urgence).
+**Difficulté : 2/5** (option a) **à 3/5** (option b) — l'option (a) réutilise l'infrastructure de signalement existante ; l'option (b) nécessite un nouvel écran d'administration, sur le modèle de `/admin-durations`.
+**Recommandation : trancher entre (a) et (b) avant de construire — la différence de charge de maintenance à long terme est significative.**
 
 ---
 
