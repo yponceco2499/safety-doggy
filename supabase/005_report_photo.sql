@@ -1,4 +1,4 @@
--- Safety Doggy — report photos (feature #10)
+-- SafetyPet — report photos (feature #10)
 -- Run this in the Supabase SQL editor after 004_veterinarian_type.sql.
 --
 -- Photos are optional and must never block publishing a report (product

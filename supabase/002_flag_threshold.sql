@@ -1,4 +1,4 @@
--- Safety Doggy — flag-threshold auto-removal
+-- SafetyPet — flag-threshold auto-removal
 -- Run this in the Supabase SQL editor after schema.sql.
 --
 -- The `flags` table has no public SELECT policy (flaggers' identities stay

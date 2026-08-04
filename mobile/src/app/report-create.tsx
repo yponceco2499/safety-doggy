@@ -89,7 +89,7 @@ export default function ReportCreateScreen() {
 
   const suggestNewType = () => {
     Linking.openURL(
-      'mailto:contact@safetydoggy.app?subject=' +
+      'mailto:contact@safetypet.app?subject=' +
         encodeURIComponent('Suggestion de nouveau type de signalement') +
         '&body=' +
         encodeURIComponent("Bonjour,\n\nJe n'ai pas trouvé de type adapté pour signaler :\n\n"),
@@ -237,7 +237,7 @@ export default function ReportCreateScreen() {
           </Pressable>
         )}
         {outsideArea && (
-          <Text style={styles.error}>Safety Doggy couvre uniquement la zone du Havre pour le moment.</Text>
+          <Text style={styles.error}>SafetyPet couvre uniquement la zone du Havre pour le moment.</Text>
         )}
 
         {error && <Text style={styles.error}>{error}</Text>}

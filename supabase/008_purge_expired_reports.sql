@@ -1,4 +1,4 @@
--- Safety Doggy — scheduled purge of expired reports (spec §4.6)
+-- SafetyPet — scheduled purge of expired reports (spec §4.6)
 -- Run this in the Supabase SQL editor after 007_walk_distance_tracking.sql.
 --
 -- This was left as a comment in schema.sql ("wire this up as a Supabase

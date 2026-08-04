@@ -1,4 +1,4 @@
--- Safety Doggy — add "pet_friendly_venue" report type
+-- SafetyPet — add "pet_friendly_venue" report type
 -- Run this in the Supabase SQL editor after schema.sql and 002_flag_threshold.sql.
 --
 -- Feature #8 (docs/05-future-improvements/feature-proposals.md): restaurants

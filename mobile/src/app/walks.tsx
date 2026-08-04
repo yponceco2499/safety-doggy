@@ -264,7 +264,7 @@ export default function WalksScreen() {
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>Suivre la distance de vos sorties ?</Text>
             <Text style={styles.modalBody}>
-              Pour calculer la distance parcourue, Safety Doggy suit votre position pendant la sortie — y compris si votre écran
+              Pour calculer la distance parcourue, SafetyPet suit votre position pendant la sortie — y compris si votre écran
               se verrouille ou que l'app passe en arrière-plan. Une notification reste visible pendant tout le suivi.
             </Text>
             <Text style={styles.modalBody}>

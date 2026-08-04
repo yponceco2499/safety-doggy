@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Safety Doggy",
+    "name": "SafetyPet",
     "slug": "safetydoggy",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -36,15 +36,15 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Safety Doggy utilise votre position pour centrer la carte et pré-remplir vos signalements. Si vous activez le suivi de distance sur une sortie, elle est aussi utilisée en arrière-plan le temps de la sortie pour calculer la distance parcourue.",
+          "locationAlwaysAndWhenInUsePermission": "SafetyPet utilise votre position pour centrer la carte et pré-remplir vos signalements. Si vous activez le suivi de distance sur une sortie, elle est aussi utilisée en arrière-plan le temps de la sortie pour calculer la distance parcourue.",
           "isAndroidBackgroundLocationEnabled": true
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Safety Doggy utilise vos photos pour illustrer un signalement (optionnel).",
-          "cameraPermission": "Safety Doggy utilise l'appareil photo pour illustrer un signalement (optionnel)."
+          "photosPermission": "SafetyPet utilise vos photos pour illustrer un signalement (optionnel).",
+          "cameraPermission": "SafetyPet utilise l'appareil photo pour illustrer un signalement (optionnel)."
         }
       ]
     ],

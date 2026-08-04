@@ -1,4 +1,4 @@
--- Safety Doggy — admin-adjustable report durations (feature #11, "safe" version)
+-- SafetyPet — admin-adjustable report durations (feature #11, "safe" version)
 -- Run this in the Supabase SQL editor after 008_purge_expired_reports.sql.
 --
 -- Per docs/05-future-improvements/feature-proposals.md #11: report

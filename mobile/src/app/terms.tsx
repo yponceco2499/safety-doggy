@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const BODY = [
-  "1. Objet — Safety Doggy est une application communautaire pour consulter et signaler des événements liés aux promenades de chiens dans la région du Havre.",
+  "1. Objet — SafetyPet est une application communautaire pour consulter et signaler des événements liés aux promenades de chiens dans la région du Havre.",
   "2. Compte — La création d'un compte est requise pour publier un signalement. Vous devez avoir 16 ans ou plus.",
   '3. Contenu des signalements — Les signalements ne doivent jamais identifier une personne ou un animal en particulier.',
   '4. Suppression — Vous pouvez supprimer votre compte à tout moment depuis votre profil.',

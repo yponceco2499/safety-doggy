@@ -1,4 +1,4 @@
-# 🐾 Safety Doggy — Product Specification (MVP)
+# 🐾 SafetyPet — Product Specification (MVP)
 
 **Community mobile app for dog owners to check the safety and quality of walking areas in real time.**
 
@@ -13,7 +13,9 @@
 | Project owners | 2 people, no prior technical background |
 | UI / legal language | French (MVP), codebase built i18n-ready for future languages |
 
-> This document is the single source of truth for Safety Doggy's product scope. It supersedes the original "PawMap" draft (archived at `../00-source-archive/pawmap-original-source-en.md`). Every change from the original is explained in `audit-and-open-questions.md`.
+> This document is the single source of truth for SafetyPet's product scope. It supersedes the original "PawMap" draft (archived at `../00-source-archive/pawmap-original-source-en.md`). Every change from the original is explained in `audit-and-open-questions.md`.
+
+> 🏷️ **Renamed from "Safety Doggy" to "SafetyPet" on 2026-07-28.** In-app text, this spec, and `feature-proposals.md` reflect the new name. Deliberately **not yet renamed**: the EAS project slug/scheme (`safetydoggy`) and the `safetydoggys-team` EAS account, since changing those without being able to test the result risks breaking the link to the already-configured EAS project — revisit when actually building for release. The GitHub repo (`safety-doggy`) can be renamed independently whenever convenient; GitHub keeps a redirect. Older archival docs under `docs/02-` through `docs/04-` (pre-dating this rename) still say "Safety Doggy" and haven't been swept.
 
 ---
 
@@ -43,7 +45,7 @@ A community-powered interactive map, inspired by Waze's collaborative model:
 - Reporting requires an account by design: it's the mechanism that makes rate-limiting, accountability, and dispute resolution possible at all. Anonymous users are full first-class consumers of the map; they are simply not contributors until they register — this is a deliberate trust/accountability trade-off, not a limitation to work around.
 - Temporary reports expire automatically to keep the map trustworthy and current.
 
-> 📌 Safety Doggy is **not** a GPS navigation app. It does not calculate routes. Users view the map, make an informed decision, and choose their own route.
+> 📌 SafetyPet is **not** a GPS navigation app. It does not calculate routes. Users view the map, make an informed decision, and choose their own route.
 
 ---
 
@@ -218,7 +220,7 @@ The MVP must be functional, stable, and publishable on the Google Play Store —
 5. Position is filled in **automatically from GPS by default** (primary method). Dragging the pin is a **secondary, manual option** for when the automatic position needs adjusting (e.g. GPS drift) or GPS is unavailable; a "Use my location" action snaps the pin back to the GPS position at any time.
 6. Duration is fixed per type (see §4.2) — **not user-editable at creation**, to prevent a report from being kept "active" longer than warranted. A user *can* extend an already-published report's duration from its own detail card if it's still genuinely valid. **Project owners** (accounts with `profiles.is_admin = true`) can recalibrate a type's default duration in-app, at `/admin-durations` — no app rebuild needed — if field feedback shows one is miscalibrated *(added 2026-07-28, see feature proposal #11 and `supabase/009_admin_report_durations.sql`; nobody is admin by default, set manually per account)*. Only affects reports created after the change — already-published reports keep the duration they were created with.
 7. Submit → published immediately on the map.
-8. Below the type grid, a **"Suggest a new report type"** link opens a pre-filled mailto to `contact@safetydoggy.app` — the escape valve referenced in §4.2 for gaps in the named type list. *(Implemented 2026-07-25.)*
+8. Below the type grid, a **"Suggest a new report type"** link opens a pre-filled mailto to `contact@safetypet.app` — the escape valve referenced in §4.2 for gaps in the named type list. *(Implemented 2026-07-25.)*
 9. An **optional photo** can be attached ("Add a photo (optional)") — same rules as the free-text field it sits next to: **never required, never blocks Publish**. See feature proposal #10 (2026-07-25 confirmation) for the moderation-risk reasoning that kept this optional rather than making it a stronger verification signal.
 
 **Why no free-text description:** a free-text field is the single largest content-moderation and legal-risk surface in the app (harassment, defamation, spam, links) — for a two-person team with no moderation tooling at MVP stage, this isn't worth the risk relative to the value it adds. Instead, provide a simple "Suggest a new report type" contact link (e.g. a mailto), so users can request categories/icons that don't yet exist; you review and add them centrally. The `description` field stays in the data model, unused for now, so this isn't a hard technical wall if you revisit it later.
@@ -502,7 +504,7 @@ Everything else in this section (dog profiles, light walk sessions, the dashboar
 
 ### 10.1 Session-start prompt summary
 
-> You are developing Safety Doggy, a community geolocation Android app (React Native + Expo) for dog owners. Backend: Supabase (PostgreSQL + Auth + Edge Functions). Map: OpenStreetMap. Visitors browse reports with no account; registered users create/edit/delete their own reports. Reports auto-expire server-side. No free-text fields on reports — category/icon only. Reports are shown anonymously (no contributor identity). GDPR compliance is mandatory. Zero recurring budget: free tiers / open source only. Refer to the full specification for any architecture or feature decision.
+> You are developing SafetyPet, a community geolocation Android app (React Native + Expo) for dog owners. Backend: Supabase (PostgreSQL + Auth + Edge Functions). Map: OpenStreetMap. Visitors browse reports with no account; registered users create/edit/delete their own reports. Reports auto-expire server-side. No free-text fields on reports — category/icon only. Reports are shown anonymously (no contributor identity). GDPR compliance is mandatory. Zero recurring budget: free tiers / open source only. Refer to the full specification for any architecture or feature decision.
 
 ### 10.2 Development Kickoff Checklist
 
@@ -522,4 +524,4 @@ Everything else in this section (dog profiles, light walk sessions, the dashboar
 
 ---
 
-*Safety Doggy — confidential internal document. Supersedes the original "PawMap" draft.*
+*SafetyPet — confidential internal document. Supersedes the original "PawMap" draft.*
