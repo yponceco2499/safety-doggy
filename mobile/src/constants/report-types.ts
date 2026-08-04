@@ -14,7 +14,9 @@ export type ReportTypeId =
   | 'water_point'
   | 'dog_friendly'
   | 'pet_friendly_venue'
-  | 'veterinarian';
+  | 'veterinarian'
+  | 'animal_shelter'
+  | 'veterinarian_emergency';
 
 export interface ReportTypeConfig {
   id: ReportTypeId;
@@ -38,6 +40,8 @@ export const REPORT_TYPES: ReportTypeConfig[] = [
   { id: 'dog_friendly', category: 'positive', color: '#1E88E5', icon: '🏠', labelFr: 'Lieu dog-friendly', durationHours: null },
   { id: 'pet_friendly_venue', category: 'positive', color: '#1E88E5', icon: '🍽️', labelFr: 'Restaurant / commerce pet-friendly', durationHours: null },
   { id: 'veterinarian', category: 'positive', color: '#1E88E5', icon: '🩺', labelFr: 'Vétérinaire', durationHours: null },
+  { id: 'animal_shelter', category: 'positive', color: '#1E88E5', icon: '🏡', labelFr: 'Refuge animalier', durationHours: null },
+  { id: 'veterinarian_emergency', category: 'positive', color: '#1E88E5', icon: '🏥', labelFr: 'Vétérinaire urgence 24h/24', durationHours: null },
 ];
 
 export function getReportType(id: ReportTypeId): ReportTypeConfig {
