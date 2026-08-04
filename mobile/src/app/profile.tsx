@@ -7,10 +7,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { signOut } from '@/lib/auth';
 import { useAuth } from '@/lib/auth-context';
 import { deleteAccount, fetchProfile, updateNickname, type Profile } from '@/lib/profile';
+import { fetchMyReports } from '@/lib/reports';
 
 export default function ProfileScreen() {
   const { session } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [reportCount, setReportCount] = useState<number | null>(null);
   const [editingNickname, setEditingNickname] = useState(false);
   const [nicknameInput, setNicknameInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -19,6 +21,8 @@ export default function ProfileScreen() {
     if (!session?.user) return;
     const data = await fetchProfile(session.user.id);
     setProfile(data);
+    const reports = await fetchMyReports(session.user.id);
+    setReportCount(reports.length);
   }, [session?.user?.id]);
 
   useFocusEffect(
@@ -109,6 +113,11 @@ export default function ProfileScreen() {
       )}
 
       {profile && <Text style={styles.meta}>Membre depuis {memberSince}</Text>}
+      {reportCount != null && (
+        <Text style={styles.meta}>
+          {reportCount} signalement{reportCount > 1 ? 's' : ''} créé{reportCount > 1 ? 's' : ''} depuis votre inscription
+        </Text>
+      )}
 
       <Pressable style={styles.listRow} onPress={() => router.push('/history')}>
         <Text style={styles.listRowLabel}>Mes signalements</Text>
