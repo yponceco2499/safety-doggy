@@ -1,8 +1,8 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import * as Location from 'expo-location';
-import { useCallback, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import MapView, { Marker, type Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,6 +10,7 @@ import { FilterSheet } from '@/components/filter-sheet';
 import { ReportDetailSheet } from '@/components/report-detail-sheet';
 import { DEFAULT_REGION, REPORT_TYPES, getReportType, type ReportTypeId } from '@/constants/report-types';
 import { useAuth } from '@/lib/auth-context';
+import { searchAddress, type GeocodingResult } from '@/lib/geocoding';
 import { fetchActiveReports, type Report } from '@/lib/reports';
 
 export default function MapScreen() {
@@ -24,6 +25,41 @@ export default function MapScreen() {
   );
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const visibleReports = reports.filter((r) => activeFilters.has(r.type));
+
+  const mapRef = useRef<MapView>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<GeocodingResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState(false);
+
+  const runSearch = async () => {
+    if (!searchQuery.trim()) return;
+    setSearching(true);
+    setSearchError(false);
+    try {
+      const results = await searchAddress(searchQuery);
+      setSearchResults(results);
+    } catch {
+      setSearchError(true);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const goToSearchResult = (result: GeocodingResult) => {
+    const next: Region = {
+      latitude: result.latitude,
+      longitude: result.longitude,
+      latitudeDelta: 0.02,
+      longitudeDelta: 0.02,
+    };
+    setRegion(next);
+    mapRef.current?.animateToRegion(next, 300);
+    setSearchResults([]);
+    setSearchOpen(false);
+    setSearchQuery('');
+  };
 
   useEffect(() => {
     (async () => {
@@ -58,7 +94,7 @@ export default function MapScreen() {
 
   return (
     <View style={styles.container}>
-      <MapView style={StyleSheet.absoluteFill} initialRegion={region} showsUserLocation={locationGranted}>
+      <MapView ref={mapRef} style={StyleSheet.absoluteFill} initialRegion={region} showsUserLocation={locationGranted}>
         {visibleReports.map((report) => {
           const type = getReportType(report.type);
           return (
@@ -78,6 +114,9 @@ export default function MapScreen() {
 
       <SafeAreaView style={styles.topBar} pointerEvents="box-none">
         <View style={styles.topBarRow} pointerEvents="box-none">
+          <Pressable style={styles.accountPill} onPress={() => setSearchOpen((o) => !o)}>
+            <Text style={styles.accountPillLabel}>🔍</Text>
+          </Pressable>
           <Pressable style={styles.accountPill} onPress={() => setFilterSheetOpen(true)}>
             <Text style={styles.accountPillLabel}>Filtres</Text>
           </Pressable>
@@ -96,6 +135,40 @@ export default function MapScreen() {
             <Text style={styles.accountPillLabel}>{session ? 'Profil' : 'Connexion'}</Text>
           </Pressable>
         </View>
+
+        {searchOpen && (
+          <View style={styles.searchBox}>
+            <View style={styles.searchRow}>
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Rechercher une adresse…"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                onSubmitEditing={runSearch}
+                returnKeyType="search"
+                autoFocus
+              />
+              <Pressable style={styles.searchButton} onPress={runSearch} disabled={searching}>
+                {searching ? <ActivityIndicator color="white" /> : <Text style={styles.searchButtonLabel}>OK</Text>}
+              </Pressable>
+            </View>
+            {searchError && <Text style={styles.searchErrorText}>Recherche indisponible, réessayez.</Text>}
+            {searchResults.length > 0 && (
+              <FlatList
+                style={styles.searchResultsList}
+                data={searchResults}
+                keyExtractor={(_, i) => String(i)}
+                renderItem={({ item }) => (
+                  <Pressable style={styles.searchResultRow} onPress={() => goToSearchResult(item)}>
+                    <Text style={styles.searchResultText} numberOfLines={2}>
+                      {item.displayName}
+                    </Text>
+                  </Pressable>
+                )}
+              />
+            )}
+          </View>
+        )}
 
         {!locationGranted && (
           <View style={styles.banner}>
@@ -178,6 +251,39 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#1D3557',
   },
+  searchBox: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 10,
+    gap: 8,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  searchRow: { flexDirection: 'row', gap: 8 },
+  searchInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 15,
+  },
+  searchButton: {
+    backgroundColor: '#208AEF',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchButtonLabel: { color: 'white', fontWeight: '700' },
+  searchErrorText: { color: '#C62828', fontSize: 13 },
+  searchResultsList: { maxHeight: 220 },
+  searchResultRow: { paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#eee' },
+  searchResultText: { fontSize: 14, color: '#333' },
   markerBubble: {
     width: 34,
     height: 34,
