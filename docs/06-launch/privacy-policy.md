@@ -60,7 +60,7 @@ Nous ne vendons ni ne louons vos données. Elles sont partagées uniquement avec
 
 Aucun outil publicitaire ou d'analyse comportementale tiers n'est intégré à l'application.
 
-*[À compléter avant publication : la région d'hébergement exacte du projet Supabase (Project Settings > General dans le tableau de bord Supabase), pour préciser si les données restent dans l'Union européenne.]*
+Le projet Supabase est hébergé dans la région **Union européenne (West EU — Irlande, eu-west-1)**. Vos données restent donc au sein de l'Union européenne.
 
 ## 7. Durée de conservation
 
