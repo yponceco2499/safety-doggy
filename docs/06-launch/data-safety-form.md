@@ -68,5 +68,5 @@ Financial info · Health and fitness *(les données de sortie sont une distance/
 
 ## Points à vérifier avant de soumettre
 
-- [ ] Confirmer la région d'hébergement Supabase (Project Settings > General) pour la question "où les données sont-elles stockées"
+- [x] Région d'hébergement Supabase confirmée : Union européenne (West EU — Irlande, eu-west-1)
 - [ ] Confirmer que la fonction `delete-account` est bien déployée avant de cocher "l'utilisateur peut demander la suppression de ses données" — sinon la déclaration serait inexacte
