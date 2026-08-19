@@ -2,13 +2,13 @@
 
 **Statut : projet de texte définitif, prêt à publier après relecture.** Rédigé à partir du schéma de données réel de l'app (session de développement du 2026-07-28), pas un avis juridique — mais chaque section ci-dessous correspond exactement à ce que le code fait, pas à une intention générique. Une relecture juridique reste recommandée avant publication, notamment sur le §6 (sous-traitants) une fois la région d'hébergement Supabase confirmée.
 
-*Dernière mise à jour : [à compléter à la publication]*
+*Dernière mise à jour : 22 août 2026*
 
 ---
 
 ## 1. Qui sommes-nous
 
-SafetyPet est éditée par [nom légal / statut à compléter], joignable à **contact@safetypet.app**.
+SafetyPet est éditée par SafetyPet, joignable à **contact@safetypet.app**.
 
 ## 2. Données que nous collectons
 

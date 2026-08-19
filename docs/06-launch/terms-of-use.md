@@ -2,7 +2,7 @@
 
 **Statut : projet de texte définitif, prêt à publier après relecture.** Rédigé à partir du comportement réel de l'app (session de développement du 2026-07-28) — pas un avis juridique. Une relecture par un professionnel du droit reste recommandée avant publication, en particulier sur la répartition de responsabilité (§7) et la loi applicable (§9), mais le contenu reflète fidèlement ce que l'app fait réellement.
 
-*Dernière mise à jour : [à compléter à la publication]*
+*Dernière mise à jour : 22 août 2026*
 
 ---
 
