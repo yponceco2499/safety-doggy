@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Politique de confidentialité — SafetyPet</title>
+<link rel="stylesheet" href="./legal.css" />
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="./index.html">← SafetyPet</a>
+  <p class="eyebrow">Document légal</p>
+  <h1>Politique de confidentialité</h1>
+  <p class="meta">Dernière mise à jour : <span class="todo">[à compléter]</span></p>
+
+  <section>
+    <h2>1. Qui sommes-nous</h2>
+    <p>SafetyPet est éditée par <span class="todo">[nom légal / statut à compléter]</span>, joignable à <a href="mailto:contact@safetypet.app">contact@safetypet.app</a>.</p>
+  </section>
+
+  <section>
+    <h2>2. Données que nous collectons</h2>
+    <table>
+      <thead><tr><th>Donnée</th><th>Quand</th><th>Obligatoire ?</th></tr></thead>
+      <tbody>
+        <tr><td>Email</td><td>Création de compte</td><td>Oui</td></tr>
+        <tr><td>Mot de passe (chiffré par notre prestataire d'authentification, jamais en clair)</td><td>Création de compte</td><td>Oui</td></tr>
+        <tr><td>Pseudo</td><td>Généré automatiquement à l'inscription, modifiable ensuite</td><td>—</td></tr>
+        <tr><td>Photo de profil</td><td>Profil</td><td>Non, facultatif</td></tr>
+        <tr><td>Position géographique (ponctuelle)</td><td>Centrage de la carte, création d'un signalement</td><td>Non — l'app fonctionne sans, en mode dégradé</td></tr>
+        <tr><td>Position géographique (en continu, y compris écran verrouillé)</td><td>Uniquement si vous activez le suivi de distance sur une sortie</td><td>Non — nécessite un consentement explicite séparé, voir §4</td></tr>
+        <tr><td>Contenu d'un signalement (type, catégorie, position, photo facultative)</td><td>Création d'un signalement</td><td>Le type et la position sont requis ; la photo est facultative</td></tr>
+        <tr><td>Informations sur vos chiens (nom, race, date de naissance, n° puce, date de vaccin)</td><td>Profil "Mes chiens"</td><td>Facultatif, usage strictement personnel</td></tr>
+        <tr><td>Historique de vos sorties (heure de début/fin, distance si suivi activé)</td><td>Fonctionnalité "Mes sorties"</td><td>Facultatif</td></tr>
+        <tr><td>Adresse recherchée sur la carte</td><td>Recherche d'adresse</td><td>Transmise à un service tiers de géocodage, voir §6</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Nous ne collectons jamais</strong> : de contenu de texte libre associé à un signalement, de numéro de téléphone, d'informations de paiement, de données de contacts, de données publicitaires.</p>
+  </section>
+
+  <section>
+    <h2>3. Pourquoi nous utilisons ces données</h2>
+    <ul>
+      <li><strong>Email/mot de passe</strong> : authentification, sécurisation et responsabilisation des signalements (limite anti-abus, contact en cas de litige).</li>
+      <li><strong>Position ponctuelle</strong> : afficher la carte centrée sur vous et pré-remplir la position d'un signalement.</li>
+      <li><strong>Position en continu (sorties)</strong> : calculer, sur l'appareil, la distance parcourue pendant une sortie que vous avez explicitement choisi de suivre.</li>
+      <li><strong>Contenu des signalements</strong> : le service lui-même — informer la communauté.</li>
+      <li><strong>Informations sur vos chiens</strong> : usage personnel uniquement (fiche d'identité, rappel de vaccin) — jamais utilisées à d'autres fins, jamais partagées publiquement.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>4. Suivi de position pendant une sortie — traitement particulier</h2>
+    <p>Cette fonctionnalité est <strong>désactivée par défaut</strong>. Avant toute activation :</p>
+    <ul>
+      <li>un écran dédié explique précisément ce qui est suivi et pourquoi ;</li>
+      <li>votre accord explicite est enregistré (horodatage) ;</li>
+      <li>vous pouvez refuser sans que cela vous empêche d'utiliser la fonctionnalité "Sorties" en version simple (sans distance).</li>
+    </ul>
+    <p><strong>Minimisation des données :</strong> seule la distance totale calculée est enregistrée à la fin de la sortie. Les positions individuelles relevées pendant la sortie ne sont jamais transmises à nos serveurs ni stockées — elles servent uniquement, sur votre appareil, à calculer ce total, puis sont immédiatement écartées.</p>
+  </section>
+
+  <section>
+    <h2>5. Anonymat des signalements</h2>
+    <p>Un signalement n'affiche jamais l'identité de son créateur, à aucun autre utilisateur. Aucune fonctionnalité de l'application ne permet à un utilisateur de voir la position, en temps réel ou passée, d'un autre utilisateur.</p>
+  </section>
+
+  <section>
+    <h2>6. Partage avec des tiers</h2>
+    <p>Nous ne vendons ni ne louons vos données. Elles sont partagées uniquement avec les prestataires techniques strictement nécessaires au fonctionnement du service :</p>
+    <table>
+      <thead><tr><th>Prestataire</th><th>Rôle</th><th>Données concernées</th></tr></thead>
+      <tbody>
+        <tr><td>Supabase</td><td>Hébergement de la base de données, authentification, stockage des photos</td><td>L'ensemble des données ci-dessus</td></tr>
+        <tr><td>OpenStreetMap / Nominatim</td><td>Fond de carte, recherche d'adresse</td><td>Le texte de votre recherche d'adresse (aucune autre donnée personnelle)</td></tr>
+      </tbody>
+    </table>
+    <p>Aucun outil publicitaire ou d'analyse comportementale tiers n'est intégré à l'application.</p>
+    <p class="todo">[À compléter avant publication : la région d'hébergement exacte du projet Supabase, pour préciser si les données restent dans l'Union européenne.]</p>
+  </section>
+
+  <section>
+    <h2>7. Durée de conservation</h2>
+    <ul>
+      <li><strong>À la suppression de votre compte, la suppression est immédiate</strong> : vos données personnelles (profil, email, chiens, historique de sorties, identifiants de connexion) sont effacées dès la confirmation, pas de délai de grâce.</li>
+      <li><strong>Vos signalements sont conservés, mais anonymisés</strong> : ils restent visibles sur la carte (valeur pour la communauté) sans plus aucun lien avec votre compte.</li>
+      <li>Tant que votre compte est actif, vos données sont conservées pour la durée d'utilisation du service.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>8. Vos droits</h2>
+    <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation et de portabilité de vos données. Vous pouvez exercer directement dans l'application : modifier votre pseudo, supprimer votre compte (effacement immédiat, voir §7). Pour toute autre demande : <a href="mailto:contact@safetypet.app">contact@safetypet.app</a>.</p>
+  </section>
+
+  <section>
+    <h2>9. Sécurité</h2>
+    <p>Les données sont stockées chez notre prestataire d'hébergement (Supabase) avec chiffrement en transit (HTTPS) et des règles d'accès strictes limitant chaque utilisateur à ses propres données (Row Level Security).</p>
+  </section>
+
+  <section>
+    <h2>10. Âge minimum</h2>
+    <p>L'inscription est réservée aux personnes de 16 ans ou plus.</p>
+  </section>
+
+  <section>
+    <h2>11. Contact</h2>
+    <p>Pour toute question relative à cette politique ou à vos données : <a href="mailto:contact@safetypet.app">contact@safetypet.app</a></p>
+  </section>
+
+  <footer>
+    <a href="./terms.html">Conditions d'utilisation</a> · <a href="mailto:contact@safetypet.app">contact@safetypet.app</a>
+  </footer>
+</div>
+</body>
+</html>
