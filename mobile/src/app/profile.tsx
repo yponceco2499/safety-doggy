@@ -87,6 +87,11 @@ export default function ProfileScreen() {
               await deleteAccount();
               await signOut();
               router.replace('/');
+            } catch {
+              Alert.alert(
+                'Suppression indisponible',
+                "La suppression de compte n'a pas pu aboutir. Réessayez plus tard ou contactez-nous à contact@safetypet.app.",
+              );
             } finally {
               setBusy(false);
             }
