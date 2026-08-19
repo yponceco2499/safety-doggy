@@ -10,7 +10,7 @@ Formulaire à remplir dans Play Console (Policy > App content > Data safety). St
 
 - **L'app collecte-t-elle ou partage-t-elle des données utilisateur ?** → **Oui, elle en collecte** (pas de partage à des tiers)
 - **Toutes les données sont-elles chiffrées en transit ?** → **Oui** (HTTPS de bout en bout via Supabase)
-- **Proposez-vous un moyen de demander la suppression des données ?** → **Oui**, en libre-service depuis l'app (Profil > Supprimer mon compte)
+- **Proposez-vous un moyen de demander la suppression des données ?** → **Prévu, mais pas encore actif.** Le bouton "Supprimer mon compte" existe dans l'app et appelle une fonction serveur (`delete-account`), mais celle-ci n'est **pas déployée** (vérifié le 2026-08-19 dans le tableau de bord Supabase : aucune fonction créée). **Ne pas répondre "Oui" dans Play Console tant que ce point n'est pas corrigé** — voir alerte ci-dessous.
 
 ---
 
@@ -66,7 +66,16 @@ Financial info · Health and fitness *(les données de sortie sont une distance/
 
 ---
 
+## ⚠️ Blocage avant lancement : suppression de compte non fonctionnelle
+
+Vérifié le 2026-08-19 : aucune fonction Edge n'est déployée sur le projet Supabase. Concrètement, **si un testeur appuie aujourd'hui sur "Supprimer mon compte", l'appel échoue silencieusement** (aucun message d'erreur affiché — l'écran d'attente se referme sans rien faire). Ce n'est pas qu'un problème de documentation : c'est une fonctionnalité annoncée dans les CGU et la politique de confidentialité (§8 / §7) qui ne marche pas encore réellement.
+
+À faire avant le lancement :
+1. Déployer `supabase/functions/delete-account` (bloqué jusqu'ici sur l'authentification de la CLI Supabase, mise de côté plus tôt dans le projet — nécessite `supabase login` depuis un terminal avec navigateur).
+2. Une fois déployée, tester réellement la suppression d'un compte.
+3. Revenir cocher "Oui" dans le formulaire Data Safety ci-dessus, seulement à ce moment-là.
+
 ## Points à vérifier avant de soumettre
 
 - [x] Région d'hébergement Supabase confirmée : Union européenne (West EU — Irlande, eu-west-1)
-- [ ] Confirmer que la fonction `delete-account` est bien déployée avant de cocher "l'utilisateur peut demander la suppression de ses données" — sinon la déclaration serait inexacte
+- [ ] Déployer `delete-account` puis re-tester avant de cocher "l'utilisateur peut demander la suppression de ses données" — sinon la déclaration serait inexacte
