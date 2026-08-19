@@ -8,7 +8,7 @@ Documents préparés pour les points 6 à 10 de la to-do list de lancement (sess
 | [`privacy-policy.md`](./privacy-policy.md) | #6 — Politique de confidentialité définitive | **Publiée** : https://yponceco2499.github.io/safety-doggy/privacy.html — complète |
 | [`store-listing.md`](./store-listing.md) | #7 — Description + captures d'écran | Textes prêts ; captures d'écran **à faire vous-même** depuis un vrai appareil (liste précise fournie) |
 | [`content-rating-questionnaire.md`](./content-rating-questionnaire.md) | #8 — Classification du contenu | Réponses préparées, à cliquer directement dans Play Console |
-| [`data-safety-form.md`](./data-safety-form.md) | #9 — Sécurité des données | Contenu prêt à transcrire, 2 points à vérifier listés en bas du fichier |
+| [`data-safety-form.md`](./data-safety-form.md) | #9 — Sécurité des données | Contenu prêt, **mais bloqué** : la suppression de compte n'est pas encore fonctionnelle (voir alerte dans le fichier) |
 | [`background-location-declaration.md`](./background-location-declaration.md) | #10 — Déclaration localisation arrière-plan | Texte FR + EN prêt ; déclenche un examen Google séparé, à soumettre tôt |
 
 ## Hébergement public des CGU / politique de confidentialité
