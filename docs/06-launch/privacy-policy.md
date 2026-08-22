@@ -8,7 +8,7 @@
 
 ## 1. Qui sommes-nous
 
-SafetyPet est éditée par SafetyPet, joignable à **contact@safetypet.app**.
+SafetyPet est éditée par SafetyPet, joignable à **support.safetypet@gmail.com**.
 
 ## 2. Données que nous collectons
 
@@ -70,7 +70,7 @@ Le projet Supabase est hébergé dans la région **Union européenne (West EU �
 
 ## 8. Vos droits
 
-Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation et de portabilité de vos données. Vous pouvez exercer directement dans l'application : modifier votre pseudo, supprimer votre compte (effacement immédiat, voir §7). Pour toute autre demande : **contact@safetypet.app**.
+Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation et de portabilité de vos données. Vous pouvez exercer directement dans l'application : modifier votre pseudo, supprimer votre compte (effacement immédiat, voir §7). Pour toute autre demande : **support.safetypet@gmail.com**.
 
 ## 9. Sécurité
 
@@ -82,4 +82,4 @@ L'inscription est réservée aux personnes de 16 ans ou plus.
 
 ## 11. Contact
 
-Pour toute question relative à cette politique ou à vos données : **contact@safetypet.app**
+Pour toute question relative à cette politique ou à vos données : **support.safetypet@gmail.com**
