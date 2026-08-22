@@ -17,7 +17,7 @@ export async function searchAddress(query: string): Promise<GeocodingResult[]> {
     'https://nominatim.openstreetmap.org/search?format=json&limit=5&q=' + encodeURIComponent(trimmed);
   const response = await fetch(url, {
     headers: {
-      'User-Agent': 'SafetyPet (contact@safetypet.app)',
+      'User-Agent': 'SafetyPet (support.safetypet@gmail.com)',
       Accept: 'application/json',
     },
   });

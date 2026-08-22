@@ -90,7 +90,7 @@ export default function ProfileScreen() {
             } catch {
               Alert.alert(
                 'Suppression indisponible',
-                "La suppression de compte n'a pas pu aboutir. Réessayez plus tard ou contactez-nous à contact@safetypet.app.",
+                "La suppression de compte n'a pas pu aboutir. Réessayez plus tard ou contactez-nous à support.safetypet@gmail.com.",
               );
             } finally {
               setBusy(false);

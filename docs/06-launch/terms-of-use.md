@@ -69,4 +69,4 @@ Les présentes conditions peuvent être modifiées à tout moment ; toute modifi
 
 ## 10. Contact
 
-Pour toute question relative aux présentes conditions : **contact@safetypet.app**
+Pour toute question relative aux présentes conditions : **support.safetypet@gmail.com**

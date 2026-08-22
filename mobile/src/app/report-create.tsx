@@ -89,7 +89,7 @@ export default function ReportCreateScreen() {
 
   const suggestNewType = () => {
     Linking.openURL(
-      'mailto:contact@safetypet.app?subject=' +
+      'mailto:support.safetypet@gmail.com?subject=' +
         encodeURIComponent('Suggestion de nouveau type de signalement') +
         '&body=' +
         encodeURIComponent("Bonjour,\n\nJe n'ai pas trouvé de type adapté pour signaler :\n\n"),

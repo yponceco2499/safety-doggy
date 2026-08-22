@@ -10,7 +10,7 @@ Contenu texte prêt à copier-coller dans Play Console (Store presence > Store l
 |---|---|
 | Nom de l'application (30 car. max) | `SafetyPet` |
 | Catégorie | Style de vie *(ou Cartes et navigation — voir note ci-dessous)* |
-| Coordonnées de contact | contact@safetypet.app |
+| Coordonnées de contact | support.safetypet@gmail.com |
 | Site web *(si disponible)* | *[à compléter]* |
 
 **Note sur la catégorie :** "Cartes et navigation" attirerait de mauvaises attentes (SafetyPet ne calcule pas d'itinéraire, voir CGU §7) — "Style de vie" correspond mieux à l'usage réel (compagnon de balade). Alternative possible : "Outils" ou une catégorie "Animaux" si Google Play en propose une dans votre marché.
