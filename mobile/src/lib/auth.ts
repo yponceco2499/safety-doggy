@@ -18,7 +18,14 @@ export async function signOut() {
 }
 
 export async function sendPasswordReset(email: string) {
-  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: 'safetydoggy://reset-password',
+  });
+  if (error) throw error;
+}
+
+export async function completePasswordReset(newPassword: string) {
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
   if (error) throw error;
 }
 
