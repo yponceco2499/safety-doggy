@@ -9,15 +9,19 @@ export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
     if (!email) return;
+    setError(null);
     setLoading(true);
     try {
       await sendPasswordReset(email);
+      setSent(true);
+    } catch {
+      setError("L'envoi a échoué. Vérifiez votre connexion et réessayez dans quelques instants.");
     } finally {
       setLoading(false);
-      setSent(true);
     }
   };
 
@@ -40,6 +44,8 @@ export default function ForgotPasswordScreen() {
             autoCapitalize="none"
             keyboardType="email-address"
           />
+          {error && <Text style={styles.error}>{error}</Text>}
+
           <Pressable style={styles.button} onPress={handleSubmit} disabled={loading}>
             {loading ? <ActivityIndicator color="white" /> : <Text style={styles.buttonLabel}>Envoyer le lien</Text>}
           </Pressable>
@@ -56,6 +62,7 @@ const styles = StyleSheet.create({
   label: { fontSize: 13, color: '#555' },
   input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12, fontSize: 16 },
   info: { fontSize: 15 },
+  error: { color: '#D32F2F', fontSize: 13 },
   button: { backgroundColor: '#208AEF', paddingVertical: 14, borderRadius: 10, alignItems: 'center', marginTop: 8 },
   buttonLabel: { color: 'white', fontWeight: '700' },
 });
