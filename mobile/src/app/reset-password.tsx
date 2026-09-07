@@ -1,4 +1,5 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import * as Linking from 'expo-linking';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,13 +7,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '@/lib/supabase';
 import { completePasswordReset } from '@/lib/auth';
 
-// Reached via the "safetydoggy://reset-password?code=..." link sent by
-// sendPasswordReset() (see src/lib/auth.ts). Supabase's client uses the PKCE
-// flow, so the link carries a one-time `code` that must be exchanged for a
-// real (recovery) session before updateUser({ password }) is allowed to
-// change it — this screen does both steps.
+// Reached via the "safetydoggy://reset-password#access_token=...&refresh_token=..."
+// link sent by sendPasswordReset() (see src/lib/auth.ts).
+//
+// Supabase's /auth/v1/verify link redirects here using the *implicit* flow:
+// the session tokens (or an error) are appended after a `#`, not as a `?`
+// query param — confirmed by following the actual redirect Location header.
+// expo-router's useLocalSearchParams() only reads the query string, so it
+// never sees this; the raw URL has to be parsed by hand instead.
+function parseFragmentParams(url: string | null): URLSearchParams | null {
+  if (!url) return null;
+  const hashIndex = url.indexOf('#');
+  if (hashIndex === -1) return null;
+  return new URLSearchParams(url.slice(hashIndex + 1));
+}
+
 export default function ResetPasswordScreen() {
-  const { code } = useLocalSearchParams<{ code?: string }>();
+  const url = Linking.useURL();
   const [exchanging, setExchanging] = useState(true);
   const [linkError, setLinkError] = useState<string | null>(null);
   const [password, setPassword] = useState('');
@@ -22,32 +33,48 @@ export default function ResetPasswordScreen() {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    if (!code) {
-      // expo-router can briefly report no params on a cold start via deep
-      // link, before it finishes resolving the initial URL — don't treat
-      // that transient state as a final error, just keep waiting.
-      return;
-    }
-    setLinkError(null);
-    setExchanging(true);
-    supabase.auth
-      .exchangeCodeForSession(code)
-      .then(({ error }) => {
-        if (error) setLinkError("Ce lien de réinitialisation est invalide ou a expiré. Demandez-en un nouveau.");
-      })
-      .finally(() => setExchanging(false));
-  }, [code]);
+    let cancelled = false;
 
-  // If params never resolve to a code at all (route opened without a link,
-  // not just a slow cold start), stop waiting after a few seconds.
-  useEffect(() => {
-    if (code) return;
-    const timeout = setTimeout(() => {
-      setLinkError("Ce lien de réinitialisation est invalide ou incomplet.");
+    (async () => {
+      const initialUrl = url ?? (await Linking.getInitialURL());
+      const params = parseFragmentParams(initialUrl);
+      if (!params) return; // not resolved yet — the timeout fallback below handles a true dead-end
+
+      const errorDescription = params.get('error_description');
+      if (errorDescription) {
+        if (!cancelled) {
+          setLinkError(decodeURIComponent(errorDescription.replace(/\+/g, ' ')));
+          setExchanging(false);
+        }
+        return;
+      }
+
+      const accessToken = params.get('access_token');
+      const refreshToken = params.get('refresh_token');
+      if (!accessToken || !refreshToken) return;
+
+      const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+      if (cancelled) return;
+      setLinkError(error ? "Ce lien de réinitialisation est invalide ou a expiré. Demandez-en un nouveau." : null);
       setExchanging(false);
-    }, 4000);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
+
+  // If the URL never resolves to usable params at all (route opened without
+  // a link), stop waiting after a few seconds instead of spinning forever.
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setExchanging((stillWaiting) => {
+        if (stillWaiting) setLinkError("Ce lien de réinitialisation est invalide ou incomplet.");
+        return false;
+      });
+    }, 5000);
     return () => clearTimeout(timeout);
-  }, [code]);
+  }, []);
 
   const handleSubmit = async () => {
     setFormError(null);
