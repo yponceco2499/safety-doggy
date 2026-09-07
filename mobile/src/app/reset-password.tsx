@@ -23,16 +23,30 @@ export default function ResetPasswordScreen() {
 
   useEffect(() => {
     if (!code) {
-      setLinkError("Ce lien de réinitialisation est invalide ou incomplet.");
-      setExchanging(false);
+      // expo-router can briefly report no params on a cold start via deep
+      // link, before it finishes resolving the initial URL — don't treat
+      // that transient state as a final error, just keep waiting.
       return;
     }
+    setLinkError(null);
+    setExchanging(true);
     supabase.auth
       .exchangeCodeForSession(code)
       .then(({ error }) => {
         if (error) setLinkError("Ce lien de réinitialisation est invalide ou a expiré. Demandez-en un nouveau.");
       })
       .finally(() => setExchanging(false));
+  }, [code]);
+
+  // If params never resolve to a code at all (route opened without a link,
+  // not just a slow cold start), stop waiting after a few seconds.
+  useEffect(() => {
+    if (code) return;
+    const timeout = setTimeout(() => {
+      setLinkError("Ce lien de réinitialisation est invalide ou incomplet.");
+      setExchanging(false);
+    }, 4000);
+    return () => clearTimeout(timeout);
   }, [code]);
 
   const handleSubmit = async () => {
