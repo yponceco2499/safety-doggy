@@ -70,4 +70,6 @@ Financial info · Health and fitness *(les données de sortie sont une distance/
 
 - [x] Région d'hébergement Supabase confirmée : Union européenne (West EU — Irlande, eu-west-1)
 - [x] `delete-account` déployée (2026-08-22) et vérifiée par un appel de test (401 attendu sans authentification, confirme que la fonction est bien en ligne)
-- [ ] Tester une vraie suppression de compte de bout en bout (créer un compte de test, le supprimer, vérifier qu'il disparaît bien de Supabase Auth) avant le lancement public
+- [x] Suppression de compte testée de bout en bout le 2026-09-20 sur un compte de test réel : compte et profil supprimés (0 ligne restante), connexion impossible ensuite
+- [ ] **Google Maps SDK** : la carte Android s'affiche via le SDK Google Maps (clé API dans `app.json`), pas via OpenStreetMap. Vérifier dans l'aide Play Console ("Données des SDK tiers") si les données traitées par ce SDK doivent être déclarées dans le formulaire ; la politique de confidentialité les mentionne déjà (§6)
+- [ ] **Resend** (envoi des emails) reçoit uniquement l'adresse email de l'utilisateur, déjà déclarée sous "Informations personnelles > Adresse e-mail" : aucune catégorie supplémentaire à déclarer

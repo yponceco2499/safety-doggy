@@ -1,8 +1,8 @@
 # SafetyPet — Politique de confidentialité
 
-**Statut : projet de texte définitif, prêt à publier après relecture.** Rédigé à partir du schéma de données réel de l'app (session de développement du 2026-07-28), pas un avis juridique — mais chaque section ci-dessous correspond exactement à ce que le code fait, pas à une intention générique. Une relecture juridique reste recommandée avant publication, notamment sur le §6 (sous-traitants) une fois la région d'hébergement Supabase confirmée.
+**Statut : projet de texte définitif, prêt à publier après relecture.** Rédigé à partir du schéma de données réel de l'app (session de développement du 2026-07-28), pas un avis juridique — mais chaque section ci-dessous correspond exactement à ce que le code fait, pas à une intention générique. Une relecture juridique reste recommandée avant publication, notamment sur le §6 (sous-traitants et transferts hors Union européenne).
 
-*Dernière mise à jour : 22 août 2026*
+*Dernière mise à jour : 20 septembre 2026*
 
 ---
 
@@ -56,11 +56,13 @@ Nous ne vendons ni ne louons vos données. Elles sont partagées uniquement avec
 | Prestataire | Rôle | Données concernées |
 |---|---|---|
 | Supabase | Hébergement de la base de données, authentification, stockage des photos | L'ensemble des données ci-dessus |
-| OpenStreetMap / Nominatim | Fond de carte, recherche d'adresse | Le texte de votre recherche d'adresse (aucune autre donnée personnelle) |
+| Google (Google Maps) | Affichage de la carte | Données techniques inhérentes à l'affichage d'une carte (adresse IP, type d'appareil, zone affichée). Aucune donnée de compte n'est transmise |
+| Resend | Envoi des emails de confirmation d'inscription et de réinitialisation de mot de passe | Votre adresse email et le code à 6 chiffres contenu dans le message |
+| OpenStreetMap / Nominatim | Recherche d'adresse | Le texte de votre recherche d'adresse (aucune autre donnée personnelle) |
 
 Aucun outil publicitaire ou d'analyse comportementale tiers n'est intégré à l'application.
 
-Le projet Supabase est hébergé dans la région **Union européenne (West EU — Irlande, eu-west-1)**. Vos données restent donc au sein de l'Union européenne.
+Le projet Supabase est hébergé dans la région **Union européenne (West EU — Irlande, eu-west-1)**. Vos données stockées dans la base restent donc au sein de l'Union européenne. Les prestataires Google et Resend peuvent traiter les données ci-dessus hors de l'Union européenne, dans le cadre de leurs propres garanties contractuelles.
 
 ## 7. Durée de conservation
 

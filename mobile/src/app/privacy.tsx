@@ -1,14 +1,16 @@
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const BODY = [
   '1. Données collectées — Email, surnom (optionnel), photo de profil (optionnelle), date d\'inscription.',
   '2. Finalité — Ces données servent uniquement à sécuriser et responsabiliser les signalements.',
   '3. Conservation — Vos données personnelles (profil, chiens, sorties, identifiants de connexion) sont supprimées immédiatement à la clôture du compte. Les signalements sont conservés, anonymisés.',
-  '4. Vos droits — Accès, rectification, suppression : support.safetypet@gmail.com.',
-  '(Texte provisoire — le texte légal définitif sera rédigé avant le lancement.)',
+  '4. Prestataires — Supabase (hébergement des données, Union européenne), Google Maps (affichage de la carte), Resend (envoi des emails de confirmation), OpenStreetMap Nominatim (recherche d\'adresse). Aucune publicité ni outil d\'analyse tiers.',
+  '5. Vos droits — Accès, rectification, suppression : support.safetypet@gmail.com.',
 ];
+
+const FULL_TEXT_URL = 'https://yponceco2499.github.io/safety-doggy/privacy.html';
 
 export default function PrivacyScreen() {
   return (
@@ -23,6 +25,9 @@ export default function PrivacyScreen() {
             {line}
           </Text>
         ))}
+        <Pressable onPress={() => Linking.openURL(FULL_TEXT_URL)}>
+          <Text style={styles.link}>Lire la politique de confidentialité complète</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -34,4 +39,5 @@ const styles = StyleSheet.create({
   body: { gap: 12, paddingBottom: 40 },
   title: { fontSize: 22, fontWeight: '700', marginBottom: 8 },
   paragraph: { fontSize: 15, color: '#333', lineHeight: 22 },
+  link: { fontSize: 15, color: '#208AEF', fontWeight: '600', marginTop: 8 },
 });

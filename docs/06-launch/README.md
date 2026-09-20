@@ -21,6 +21,19 @@ Publiées via GitHub Pages, sur une branche orpheline dédiée `gh-pages` conten
 
 Ces URLs sont celles à saisir dans Play Console (fiche Store + formulaire Data Safety). Le contenu HTML est une copie mise en forme de `terms-of-use.md` / `privacy-policy.md` — **toute modification future doit être répercutée dans les deux endroits** (le `.md` ici, le `.html` sur la branche `gh-pages`).
 
+## État technique avant le premier envoi sur Play Console (2026-09-20)
+
+- **Identifiant Android** : `app.safetypet` (définitif une fois publié). Builds via EAS : profil `preview` (APK installable directement, pour tester) et `production` (AAB, à envoyer sur Play Console) — construits sur le même commit.
+- **Emails** : envoyés via Resend depuis `noreply@safetypet.app` (domaine vérifié). L'inscription et la réinitialisation de mot de passe utilisent un **code à 6 chiffres saisi dans l'app**, pas un lien (les liens passaient par un navigateur puis un lien profond, chaîne peu fiable sur Android).
+- **Suppression de compte** : déployée et testée de bout en bout.
+- **Écrans légaux dans l'app** : résumé + lien vers les textes complets publiés (plus de mention « texte provisoire »).
+
+### À faire après le tout premier envoi sur Play Console
+
+- **Restreindre la clé Google Maps** (Google Cloud Console > Identifiants) : package `app.safetypet` + empreinte SHA-1. Avec « Play App Signing », les apps installées depuis le Play Store sont signées par une clé Google différente de la clé d'envoi : il faut ajouter **les deux** empreintes (celle de la clé Google, visible dans Play Console > Configuration > Intégrité de l'appli, et celle de la clé d'envoi gérée par EAS). Restreindre avant d'avoir la première empreinte rendrait la carte blanche pour les testeurs. En attendant, limiter au moins la clé à l'API « Maps SDK for Android ».
+- **Déclaration des services de premier plan** (permission de localisation en arrière-plan) : si Play Console la demande, réutiliser le texte de `background-location-declaration.md`.
+- **Identité de l'éditeur** dans les CGU et la politique de confidentialité : remplacer « SafetyPet » par les noms réels des éditeurs (personnes physiques tant qu'aucune société n'existe) ; à répercuter aussi sur la page publiée (`gh-pages`).
+
 ## Ce qui reste hors de portée de ces documents
 
 - **Captures d'écran et vidéo** — nécessitent un appareil réel, non générables ici.

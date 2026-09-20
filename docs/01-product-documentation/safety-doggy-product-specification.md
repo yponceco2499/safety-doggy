@@ -152,6 +152,8 @@ The MVP must be functional, stable, and publishable on the Google Play Store —
 - Base tiles: OpenStreetMap (free, open source).
 - Budget fallback: Leaflet via WebView if API constraints appear.
 
+> **As built (2026-09-20):** on Android, `react-native-maps` renders the map through the Google Maps SDK, with a Google Maps API key set in `mobile/app.json` (`android.config.googleMaps.apiKey`). OpenStreetMap is only used through Nominatim for address search. The privacy policy lists Google as a processor accordingly.
+
 ### 4.2 Report Types
 
 | Category | Type | Icon | Default Duration |
@@ -365,7 +367,8 @@ React Native + Expo is natively cross-platform — no rewrite required to add iO
 
 ### 6.2 Sign-up Journey
 
-- Email + password: simple form, email confirmation link.
+- Email + password: simple form, email confirmation by a **6-digit code typed into the app** (implemented 2026-09-20; the original link-based confirmation was replaced because the link/browser/deep-link chain proved unreliable on Android). Logging in with an unconfirmed account sends a fresh code and opens the confirmation screen.
+- Password reset works the same way: "Forgot password" emails a 6-digit code, then one screen takes the code plus the new password. Emails are sent through Resend from `noreply@safetypet.app`.
 - Google Sign-In: OAuth 2.0, no password needed.
 - Nickname requested at first login (optional, auto-generated if left blank).
 - Terms of Use acceptance required at sign-up (checkbox + link).

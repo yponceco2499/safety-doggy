@@ -12,6 +12,11 @@
     },
     "android": {
       "package": "app.safetypet",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCylNRGgtqh5nO1XuCfjgpWSbhM6O6_s04"
+        }
+      },
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

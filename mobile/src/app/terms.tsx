@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const BODY = [
@@ -7,8 +7,9 @@ const BODY = [
   "2. Compte — La création d'un compte est requise pour publier un signalement. Vous devez avoir 16 ans ou plus.",
   '3. Contenu des signalements — Les signalements ne doivent jamais identifier une personne ou un animal en particulier.',
   '4. Suppression — Vous pouvez supprimer votre compte à tout moment depuis votre profil.',
-  '(Texte provisoire — le texte légal définitif sera rédigé avant le lancement.)',
 ];
+
+const FULL_TEXT_URL = 'https://yponceco2499.github.io/safety-doggy/terms.html';
 
 export default function TermsScreen() {
   return (
@@ -23,6 +24,9 @@ export default function TermsScreen() {
             {line}
           </Text>
         ))}
+        <Pressable onPress={() => Linking.openURL(FULL_TEXT_URL)}>
+          <Text style={styles.link}>Lire les conditions d'utilisation complètes</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -34,4 +38,5 @@ const styles = StyleSheet.create({
   body: { gap: 12, paddingBottom: 40 },
   title: { fontSize: 22, fontWeight: '700', marginBottom: 8 },
   paragraph: { fontSize: 15, color: '#333', lineHeight: 22 },
+  link: { fontSize: 15, color: '#208AEF', fontWeight: '600', marginTop: 8 },
 });
