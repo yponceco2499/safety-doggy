@@ -17,10 +17,16 @@ export async function signOut() {
   if (error) throw error;
 }
 
+// The recovery email carries a 6-digit code (see the Supabase recovery email
+// template) that the user types into the app — no link, so no browser hop or
+// deep-link handoff that mail apps can prefetch/consume or Android can drop.
 export async function sendPasswordReset(email: string) {
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: 'safetydoggy://reset-password',
-  });
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  if (error) throw error;
+}
+
+export async function verifyRecoveryCode(email: string, code: string) {
+  const { error } = await supabase.auth.verifyOtp({ email, token: code, type: 'recovery' });
   if (error) throw error;
 }
 
