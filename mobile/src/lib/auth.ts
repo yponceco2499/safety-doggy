@@ -35,6 +35,13 @@ export async function completePasswordReset(newPassword: string) {
   if (error) throw error;
 }
 
+// Same idea as the password reset: the signup email carries a 6-digit code
+// typed into the app instead of a link. Verifying it also opens the session.
+export async function verifySignupCode(email: string, code: string) {
+  const { error } = await supabase.auth.verifyOtp({ email, token: code, type: 'signup' });
+  if (error) throw error;
+}
+
 export async function resendConfirmationEmail(email: string) {
   const { error } = await supabase.auth.resend({ type: 'signup', email });
   if (error) throw error;

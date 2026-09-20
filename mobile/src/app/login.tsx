@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { signInWithEmail } from '@/lib/auth';
+import { resendConfirmationEmail, signInWithEmail } from '@/lib/auth';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -21,7 +21,20 @@ export default function LoginScreen() {
     try {
       await signInWithEmail(email, password);
       router.replace('/');
-    } catch {
+    } catch (e) {
+      const code = (e as { code?: string } | null)?.code;
+      if (code === 'email_not_confirmed') {
+        // Correct credentials but the account was never confirmed: send a
+        // fresh code and go to the confirmation screen instead of showing a
+        // misleading "wrong password".
+        try {
+          await resendConfirmationEmail(email);
+        } catch {
+          // The confirmation screen has its own "resend" action.
+        }
+        router.replace({ pathname: '/confirm-pending', params: { email } });
+        return;
+      }
       setError('Email ou mot de passe incorrect.');
     } finally {
       setLoading(false);
