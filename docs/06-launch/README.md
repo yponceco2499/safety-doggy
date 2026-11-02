@@ -28,9 +28,15 @@ Ces URLs sont celles à saisir dans Play Console (fiche Store + formulaire Data 
 - **Suppression de compte** : déployée et testée de bout en bout.
 - **Écrans légaux dans l'app** : résumé + lien vers les textes complets publiés (plus de mention « texte provisoire »).
 
+### Sécurité de la clé Google Maps
+
+Le dépôt GitHub est public (condition pour publier des pages GitHub gratuitement), donc la clé dans `mobile/app.json` est visible par n'importe qui. Ce n'est un problème que si la clé n'est pas restreinte : une clé Android correctement restreinte (package + empreinte(s) SHA-1) ne peut être utilisée que par l'app elle-même, même si sa valeur est publique.
+
+**À faire (identifiée le 2026-11-02) :** restreindre la clé dans Google Cloud Console > Identifiants, à l'API « Maps SDK for Android », avec package `app.safetypet` et l'empreinte SHA-1 de la clé de signature EAS : `65:48:9D:34:B0:9F:54:BF:0B:C4:9B:2F:82:48:88:E0:60:3E:99:87` (récupérée via l'API GraphQL EAS, `androidKeystore.sha1CertificateFingerprint`). Action côté Google Cloud Console, pas de dépôt de code — à faire directement dans la console.
+
 ### À faire après le tout premier envoi sur Play Console
 
-- **Restreindre la clé Google Maps** (Google Cloud Console > Identifiants) : package `app.safetypet` + empreinte SHA-1. Avec « Play App Signing », les apps installées depuis le Play Store sont signées par une clé Google différente de la clé d'envoi : il faut ajouter **les deux** empreintes (celle de la clé Google, visible dans Play Console > Configuration > Intégrité de l'appli, et celle de la clé d'envoi gérée par EAS). Restreindre avant d'avoir la première empreinte rendrait la carte blanche pour les testeurs. En attendant, limiter au moins la clé à l'API « Maps SDK for Android ».
+- **Ajouter une deuxième empreinte SHA-1 à la clé Google Maps** : avec « Play App Signing » (configuration standard), les apps installées depuis le Play Store sont re-signées par une clé Google différente de la clé d'envoi EAS déjà restreinte ci-dessus. Visible dans Play Console > Configuration > Intégrité de l'application, une fois le premier `.aab` envoyé. Sans cette deuxième empreinte, la carte serait blanche pour les utilisateurs installant depuis le Store (le build de test EAS, lui, continuera de fonctionner avec la première empreinte).
 - **Déclaration des services de premier plan** (permission de localisation en arrière-plan) : si Play Console la demande, réutiliser le texte de `background-location-declaration.md`.
 - **Identité de l'éditeur** dans les CGU et la politique de confidentialité : remplacer « SafetyPet » par les noms réels des éditeurs (personnes physiques tant qu'aucune société n'existe) ; à répercuter aussi sur la page publiée (`gh-pages`).
 
